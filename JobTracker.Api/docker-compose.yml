@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # This is the service name for our Postgres database
+  postgres_db:
+    image: postgres:15 # We specify version 15 for stability
+    container_name: jobtracker-postgres
+    restart: always
+    ports:
+      # Maps your Mac's port 5433 to the container's port 5432 to avoid conflicts
+      - "5433:5432"
+    environment:
+      # Define the username, password, and database name
+      # You can change 'mypassword' to something more secure
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=jobtrackerdb
+    volumes:
+      # This line ensures your data persists even if you restart the container
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  # Defines the persistent volume
+  postgres_data:
