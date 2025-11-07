@@ -130,3 +130,4 @@
 /Users/albertmacmini/VSCodeProjects/JobTrackerPortfolio/JobTracker.Api/bin/Debug/net9.0/Swashbuckle.AspNetCore.Swagger.dll
 /Users/albertmacmini/VSCodeProjects/JobTrackerPortfolio/JobTracker.Api/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerGen.dll
 /Users/albertmacmini/VSCodeProjects/JobTrackerPortfolio/JobTracker.Api/bin/Debug/net9.0/Swashbuckle.AspNetCore.SwaggerUI.dll
+/Users/albertmacmini/VSCodeProjects/JobTrackerPortfolio/JobTracker.Api/obj/Debug/net9.0/JobTracker.Api.sourcelink.json
