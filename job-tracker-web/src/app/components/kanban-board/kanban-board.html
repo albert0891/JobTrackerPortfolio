@@ -1,0 +1,97 @@
+<div class="kanban-board">
+    <div class="board-container">
+
+        <div class="column">
+            <h2>Applied ({{ applied.length }})</h2>
+            <div cdkDropList [cdkDropListData]="applied" class="job-list" id="applied-list"
+                [cdkDropListConnectedTo]="columnIds" (cdkDropListDropped)="drop($event)">
+
+                @for (job of applied; track job.id) {
+                <mat-card cdkDrag>
+                    <mat-card-header>
+                        <mat-card-title>{{ job.jobTitle }}</mat-card-title>
+                        <mat-card-subtitle>{{ job.companyName }}</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <p>Applied: {{ job.dateApplied | date: 'mediumDate' }}</p>
+                    </mat-card-content>
+                </mat-card>
+                }
+
+                @if (applied.length === 0) {
+                <div class="placeholder">Drop applications here</div>
+                }
+            </div>
+        </div>
+
+        <div class="column">
+            <h2>Interviewing ({{ interviewing.length }})</h2>
+            <div cdkDropList [cdkDropListData]="interviewing" class="job-list" id="interviewing-list"
+                [cdkDropListConnectedTo]="columnIds" (cdkDropListDropped)="drop($event)">
+
+                @for (job of interviewing; track job.id) {
+                <mat-card cdkDrag>
+                    <mat-card-header>
+                        <mat-card-title>{{ job.jobTitle }}</mat-card-title>
+                        <mat-card-subtitle>{{ job.companyName }}</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <p>Applied: {{ job.dateApplied | date: 'mediumDate' }}</p>
+                    </mat-card-content>
+                </mat-card>
+                }
+
+                @if (interviewing.length === 0) {
+                <div class="placeholder">Drop applications here</div>
+                }
+            </div>
+        </div>
+
+        <div class="column">
+            <h2>Offer ({{ offer.length }})</h2>
+            <div cdkDropList [cdkDropListData]="offer" class="job-list" id="offer-list"
+                [cdkDropListConnectedTo]="columnIds" (cdkDropListDropped)="drop($event)">
+
+                @for (job of offer; track job.id) {
+                <mat-card cdkDrag>
+                    <mat-card-header>
+                        <mat-card-title>{{ job.jobTitle }}</mat-card-title>
+                        <mat-card-subtitle>{{ job.companyName }}</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <p>Applied: {{ job.dateApplied | date: 'mediumDate' }}</p>
+                    </mat-card-content>
+                </mat-card>
+                }
+
+                @if (offer.length === 0) {
+                <div class="placeholder">Drop applications here</div>
+                }
+            </div>
+        </div>
+
+        <div class="column">
+            <h2>Rejected ({{ rejected.length }})</h2>
+            <div cdkDropList [cdkDropListData]="rejected" class="job-list" id="rejected-list"
+                [cdkDropListConnectedTo]="columnIds" (cdkDropListDropped)="drop($event)">
+
+                @for (job of rejected; track job.id) {
+                <mat-card cdkDrag>
+                    <mat-card-header>
+                        <mat-card-title>{{ job.jobTitle }}</mat-card-title>
+                        <mat-card-subtitle>{{ job.companyName }}</mat-card-subtitle>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <p>Applied: {{ job.dateApplied | date: 'mediumDate' }}</p>
+                    </mat-card-content>
+                </mat-card>
+                }
+
+                @if (rejected.length === 0) {
+                <div class="placeholder">Drop applications here</div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
