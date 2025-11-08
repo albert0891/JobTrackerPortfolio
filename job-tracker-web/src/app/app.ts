@@ -1,8 +1,7 @@
 // src/app/app.ts (Main Application Component)
 
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
 // Import the component we just created
 import { KanbanBoardComponent } from './components/kanban-board/kanban-board';
 
@@ -10,7 +9,7 @@ import { KanbanBoardComponent } from './components/kanban-board/kanban-board';
   selector: 'app-root',
   standalone: true,
   // Make sure KanbanBoardComponent is in the imports array
-  imports: [CommonModule, RouterOutlet, KanbanBoardComponent],
+  imports: [CommonModule, KanbanBoardComponent],
   template: `
     <header>
       <h1>Job Tracker AI Portfolio Project</h1>
@@ -19,7 +18,7 @@ import { KanbanBoardComponent } from './components/kanban-board/kanban-board';
       <app-kanban-board></app-kanban-board>
     </main>
   `,
-  styleUrls: ['./app.scss']
+  styleUrls: ['./app.scss'],
 })
 export class App {
   title = 'job-tracker-web';
