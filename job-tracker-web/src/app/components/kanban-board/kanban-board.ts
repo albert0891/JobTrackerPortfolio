@@ -1,134 +1,108 @@
-// src/app/components/kanban-board/kanban-board.ts
-
-import { Component, inject, OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common'; // Needed for *ngFor, *ngIf
-// Import DragDropModule from Angular CDK for drag and drop functionality
-import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { MatCardModule } from '@angular/material/card'; // For job cards
+import { Component, OnInit, inject } from '@angular/core';
+// Import DatePipe to format dates in HTML
+import { DatePipe } from '@angular/common';
+import {
+  CdkDragDrop,
+  DragDropModule,
+  moveItemInArray,
+  transferArrayItem,
+} from '@angular/cdk/drag-drop';
+import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-// Import our service and model
-import { JobService, JobApplication } from '../../services/job'; 
+
+// Import our new Model and Service
+import { JobApplication } from '../../models/job-application.model';
+import { JobService } from '../../services/job.service';
 
 @Component({
   selector: 'app-kanban-board',
-  // Make sure to add all necessary modules here, especially DragDropModule
   standalone: true,
   imports: [
-    DatePipe, 
-    DragDropModule, 
-    MatCardModule, 
-    MatButtonModule
+    DatePipe, // For {{ date | date }}
+    DragDropModule, // For Drag and Drop
+    MatCardModule, // For Material Cards
+    MatButtonModule,
   ],
   templateUrl: './kanban-board.html',
-  styleUrls: ['./kanban-board.scss']
+  styleUrls: ['./kanban-board.scss'],
 })
 export class KanbanBoardComponent implements OnInit {
-  // Use inject to get the JobService instance
+  // Inject the JobService
   private jobService = inject(JobService);
 
-  // Define the columns for the Kanban board
-  // This is the array that holds our JobApplication objects
-  public applied: JobApplication[] = [];
-  public interviewing: JobApplication[] = [];
-  public offer: JobApplication[] = [];
-  public rejected: JobApplication[] = [];
+  // Expose the Service's Signal directly to the template.
+  // Note: 'jobs' is a Signal, so it is called like a function: this.jobs()
+  public jobs = this.jobService.jobs;
 
-  // A list of the column IDs, needed for the Drag and Drop Module
-  public columnIds: string[] = ['applied-list', 'interviewing-list', 'offer-list', 'rejected-list'];
+  // Define column IDs for drag-and-drop connection
+  public columnIds = ['applied-list', 'interviewing-list', 'offer-list', 'rejected-list'];
 
-  // This lifecycle hook runs when the component is initialized
+  // Constants for status strings to avoid typos
+  public readonly statuses = {
+    APPLIED: 'Applied',
+    INTERVIEWING: 'Interviewing',
+    OFFER: 'Offer',
+    REJECTED: 'Rejected',
+  };
+
   ngOnInit(): void {
-    // 1. Fetch data from the backend
-    this.loadJobs();
-  }
-
-  // Method to fetch data and categorize it into the columns
-  loadJobs(): void {
-    this.jobService.getJobs().subscribe({
-      next: (jobs) => {
-        // Clear existing arrays before categorization
-        this.applied = [];
-        this.interviewing = [];
-        this.offer = [];
-        this.rejected = [];
-        
-        // Categorize jobs based on the 'status' property
-        jobs.forEach(job => {
-          switch (job.status) {
-            case 'Applied':
-              this.applied.push(job);
-              break;
-            case 'Interviewing':
-              this.interviewing.push(job);
-              break;
-            case 'Offer':
-              this.offer.push(job);
-              break;
-            case 'Rejected':
-              this.rejected.push(job);
-              break;
-            default:
-              this.applied.push(job); // Default to 'Applied' if status is unknown
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Error fetching job applications:', err);
-        // In a real app, we would show a user-friendly error message here
-      }
-    });
+    // Initial fetch of data when component loads
+    this.jobService.getAllJobs();
   }
 
   /**
-   * Handles the drop event when a job card is moved.
+   * Helper function to filter the Signal's list by status.
+   * This is used in the HTML @for loop.
+   */
+  getJobsByStatus(status: string): JobApplication[] {
+    // Access the signal value using parenthesis ()
+    return this.jobs().filter((job) => job.status === status);
+  }
+
+  /**
+   * Handles the drop event from the Angular CDK DragDropModule.
    */
   drop(event: CdkDragDrop<JobApplication[]>) {
-    // If the card is dropped back into the same list
+    // Case 1: Reordering within the same column
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } 
-    // If the card is dropped into a different list
+    }
+    // Case 2: Moving to a different column
     else {
+      // 1. Visually move the item immediately
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,
         event.previousIndex,
-        event.currentIndex,
+        event.currentIndex
       );
-      
-      // CRITICAL STEP 1: Update the status of the moved item in the model
+
+      // 2. Get the Job object that was moved
       const movedJob = event.container.data[event.currentIndex];
-      
-      // Determine the new status based on the target container ID
-      let newStatus: string;
+
+      // 3. Determine new status based on the DOM ID of the column
+      let newStatus = this.statuses.APPLIED; // Default
+
       switch (event.container.id) {
         case 'interviewing-list':
-          newStatus = 'Interviewing';
+          newStatus = this.statuses.INTERVIEWING;
           break;
         case 'offer-list':
-          newStatus = 'Offer';
+          newStatus = this.statuses.OFFER;
           break;
         case 'rejected-list':
-          newStatus = 'Rejected';
+          newStatus = this.statuses.REJECTED;
           break;
         case 'applied-list':
-        default:
-          newStatus = 'Applied';
+          newStatus = this.statuses.APPLIED;
           break;
       }
 
-      // CRITICAL STEP 2: Update the model and call the backend
-      movedJob.status = newStatus;
-      console.log(`Job ID ${movedJob.id} moved to status: ${newStatus}`);
-
-      // Call the service to update the job status in the database
-      this.jobService.updateJob(movedJob).subscribe({
-        next: () => console.log('Backend status update successful.'),
-        error: (err) => {
-          console.error('Failed to update job status on backend:', err);
-          // TODO: Implement error handling (e.g., move the card back on failure)
-        }
-      });
+      // 4. Call Service to update Backend
+      // We check for 'id' existence to satisfy TypeScript strict mode
+      if (movedJob.id) {
+        this.jobService.updateJobStatus(movedJob.id, newStatus);
+      }
     }
   }
 }
