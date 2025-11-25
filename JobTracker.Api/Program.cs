@@ -1,5 +1,6 @@
 // Import all necessary namespaces
 using JobTracker.Api.Data;
+using JobTracker.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models; // Import this for full Swagger configuration
 
@@ -42,6 +43,9 @@ builder.Services.AddSwaggerGen(c =>
     // This provides standard information for the Swagger UI page
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobTracker.Api", Version = "v1" });
 });
+
+// 5. Register the concrete Service against its Interface for Dependency Injection
+builder.Services.AddScoped<IJobService, JobService>();
 
 // --- End of DI Container ---
 
