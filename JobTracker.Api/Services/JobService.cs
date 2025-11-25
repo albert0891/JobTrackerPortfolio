@@ -1,5 +1,3 @@
-// JobTracker.Api/Services/JobService.cs
-
 using JobTracker.Api.Data;
 using JobTracker.Api.Models;
 using Microsoft.EntityFrameworkCore;

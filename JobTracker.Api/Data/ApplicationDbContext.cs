@@ -1,8 +1,6 @@
-// We must import the namespaces we need
 using JobTracker.Api.Models;
 using Microsoft.EntityFrameworkCore;
 
-// This defines the namespace for our data-related classes
 namespace JobTracker.Api.Data
 {
     // Our DbContext class inherits from the base DbContext provided by EF Core

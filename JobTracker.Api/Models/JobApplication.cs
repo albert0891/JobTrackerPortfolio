@@ -1,5 +1,3 @@
-// This namespace follows your project's structure.
-// It helps organize your code and prevents name conflicts.
 namespace JobTracker.Api.Models
 {
     public class JobApplication

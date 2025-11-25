@@ -1,5 +1,3 @@
-// JobTracker.Api/Controllers/JobApplicationsController.cs
-
 using JobTracker.Api.Models;
 using JobTracker.Api.Services;
 using Microsoft.AspNetCore.Mvc;

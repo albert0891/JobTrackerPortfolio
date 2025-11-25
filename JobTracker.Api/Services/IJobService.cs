@@ -1,5 +1,3 @@
-// JobTracker.Api/Services/IJobService.cs
-
 using JobTracker.Api.Models;
 
 namespace JobTracker.Api.Services

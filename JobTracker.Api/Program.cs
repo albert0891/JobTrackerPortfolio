@@ -10,7 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // 1. Register Controllers
 // This tells the app to find and use our Controller classes (like JobApplicationsController).
-// This was the MOST IMPORTANT missing line.
 builder.Services.AddControllers();
 
 // 2. Register Database Context
@@ -83,7 +82,6 @@ app.UseAuthorization();
 // 5. Map Controllers
 // This tells the app to map incoming requests to the routes defined
 // on our Controller classes (e.g., [Route("api/[controller]")])
-// This was the SECOND most important missing line.
 app.MapControllers();
 
 // 6. Run the application
