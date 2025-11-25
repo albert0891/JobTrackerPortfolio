@@ -2,11 +2,12 @@
     <div class="board-container">
 
         <div class="column">
-            <h2>Applied ({{ applied.length }})</h2>
-            <div cdkDropList [cdkDropListData]="applied" class="job-list" id="applied-list"
+            <h2>Applied ({{ getJobsByStatus(statuses.APPLIED).length }})</h2>
+
+            <div cdkDropList [cdkDropListData]="getJobsByStatus(statuses.APPLIED)" class="job-list" id="applied-list"
                 [cdkDropListConnectedTo]="columnIds" (cdkDropListDropped)="drop($event)">
 
-                @for (job of applied; track job.id) {
+                @for (job of getJobsByStatus(statuses.APPLIED); track job.id) {
                 <mat-card cdkDrag>
                     <mat-card-header>
                         <mat-card-title>{{ job.jobTitle }}</mat-card-title>
@@ -17,19 +18,20 @@
                     </mat-card-content>
                 </mat-card>
                 }
-
-                @if (applied.length === 0) {
+                @empty {
                 <div class="placeholder">Drop applications here</div>
                 }
+
             </div>
         </div>
 
         <div class="column">
-            <h2>Interviewing ({{ interviewing.length }})</h2>
-            <div cdkDropList [cdkDropListData]="interviewing" class="job-list" id="interviewing-list"
-                [cdkDropListConnectedTo]="columnIds" (cdkDropListDropped)="drop($event)">
+            <h2>Interviewing ({{ getJobsByStatus(statuses.INTERVIEWING).length }})</h2>
 
-                @for (job of interviewing; track job.id) {
+            <div cdkDropList [cdkDropListData]="getJobsByStatus(statuses.INTERVIEWING)" class="job-list"
+                id="interviewing-list" [cdkDropListConnectedTo]="columnIds" (cdkDropListDropped)="drop($event)">
+
+                @for (job of getJobsByStatus(statuses.INTERVIEWING); track job.id) {
                 <mat-card cdkDrag>
                     <mat-card-header>
                         <mat-card-title>{{ job.jobTitle }}</mat-card-title>
@@ -40,19 +42,20 @@
                     </mat-card-content>
                 </mat-card>
                 }
-
-                @if (interviewing.length === 0) {
+                @empty {
                 <div class="placeholder">Drop applications here</div>
                 }
+
             </div>
         </div>
 
         <div class="column">
-            <h2>Offer ({{ offer.length }})</h2>
-            <div cdkDropList [cdkDropListData]="offer" class="job-list" id="offer-list"
+            <h2>Offer ({{ getJobsByStatus(statuses.OFFER).length }})</h2>
+
+            <div cdkDropList [cdkDropListData]="getJobsByStatus(statuses.OFFER)" class="job-list" id="offer-list"
                 [cdkDropListConnectedTo]="columnIds" (cdkDropListDropped)="drop($event)">
 
-                @for (job of offer; track job.id) {
+                @for (job of getJobsByStatus(statuses.OFFER); track job.id) {
                 <mat-card cdkDrag>
                     <mat-card-header>
                         <mat-card-title>{{ job.jobTitle }}</mat-card-title>
@@ -63,19 +66,20 @@
                     </mat-card-content>
                 </mat-card>
                 }
-
-                @if (offer.length === 0) {
+                @empty {
                 <div class="placeholder">Drop applications here</div>
                 }
+
             </div>
         </div>
 
         <div class="column">
-            <h2>Rejected ({{ rejected.length }})</h2>
-            <div cdkDropList [cdkDropListData]="rejected" class="job-list" id="rejected-list"
+            <h2>Rejected ({{ getJobsByStatus(statuses.REJECTED).length }})</h2>
+
+            <div cdkDropList [cdkDropListData]="getJobsByStatus(statuses.REJECTED)" class="job-list" id="rejected-list"
                 [cdkDropListConnectedTo]="columnIds" (cdkDropListDropped)="drop($event)">
 
-                @for (job of rejected; track job.id) {
+                @for (job of getJobsByStatus(statuses.REJECTED); track job.id) {
                 <mat-card cdkDrag>
                     <mat-card-header>
                         <mat-card-title>{{ job.jobTitle }}</mat-card-title>
@@ -86,10 +90,10 @@
                     </mat-card-content>
                 </mat-card>
                 }
-
-                @if (rejected.length === 0) {
+                @empty {
                 <div class="placeholder">Drop applications here</div>
                 }
+
             </div>
         </div>
 
