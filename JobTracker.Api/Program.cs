@@ -70,7 +70,7 @@ if (app.Environment.IsDevelopment())
 
 // 2. Enable HTTPS Redirection
 // This automatically redirects any HTTP request to its HTTPS equivalent.
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // 3. Enable CORS
 // This applies the CORS policy we defined above, allowing our Angular app to connect.
