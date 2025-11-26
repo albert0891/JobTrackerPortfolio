@@ -17,5 +17,36 @@ namespace JobTracker.Api.Data
         // We are telling EF Core: "I want a table called 'JobApplications'
         // that is based on my 'JobApplication' model."
         public DbSet<JobApplication> JobApplications { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Seed Data: This will be inserted automatically when you run migration
+            modelBuilder.Entity<JobApplication>().HasData(
+                new JobApplication
+                {
+                    Id = 1, // Providing ID is crucial for idempotent seeding
+                    JobTitle = "Frontend Engineer",
+                    CompanyName = "Google",
+                    DateApplied = new DateTime(2025, 11, 25, 10, 0, 0, DateTimeKind.Utc),
+                    Status = "Applied",
+                    JobDescription = "We are looking for an Angular expert...",
+                    AiAnalysisResult = null,
+                    GeneratedCoverLetter = null
+                },
+                new JobApplication
+                {
+                    Id = 2,
+                    JobTitle = ".NET Backend Developer",
+                    CompanyName = "Microsoft",
+                    DateApplied = new DateTime(2025, 11, 20, 14, 30, 0, DateTimeKind.Utc),
+                    Status = "Interviewing",
+                    JobDescription = "Experience with C# and Azure required...",
+                    AiAnalysisResult = null,
+                    GeneratedCoverLetter = null
+                }
+            );
+        }
     }
 }

@@ -46,6 +46,9 @@ builder.Services.AddSwaggerGen(c =>
 // 5. Register the concrete Service against its Interface for Dependency Injection
 builder.Services.AddScoped<IJobService, JobService>();
 
+// 6. Register the AiService for Dependency Injection
+builder.Services.AddScoped<AiService>();
+
 // --- End of DI Container ---
 
 var app = builder.Build();

@@ -12,7 +12,7 @@ import { KanbanBoardComponent } from './components/kanban-board/kanban-board';
   imports: [CommonModule, KanbanBoardComponent],
   template: `
     <header>
-      <h1>Job Tracker AI Portfolio Project</h1>
+      <h1>OfferMagnet</h1>
     </header>
     <main>
       <app-kanban-board></app-kanban-board>
