@@ -4,7 +4,7 @@
 
 ## 🌟 Key Features
 
-* **🤖 AI-Powered Analysis:** Instantly compares your resume against job descriptions using Google Gemini 1.5 Flash. It provides a match score, highlights your strengths, and identifies missing keywords.
+* **🤖 AI-Powered Analysis:** Instantly compares your resume against job descriptions using Google Gemini. It provides a match score, highlights your strengths, and identifies missing keywords.
 * **📋 Kanban Workflow:** Drag-and-drop interface (Angular CDK) to visually track applications through stages (Applied, Interviewing, Offer, Rejected).
 * **🚀 Modern Tech Stack:** Built with **.NET 9 Web API** and **Angular 17+ (Signals)** for high performance and maintainability.
 * **🐳 Containerized DB:** Uses Dockerized PostgreSQL for reliable, portable data persistence.
