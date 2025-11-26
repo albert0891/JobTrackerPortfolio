@@ -1,18 +1,21 @@
 import { Component, OnInit, inject } from '@angular/core';
 // Import DatePipe to format dates in HTML
-import { DatePipe } from '@angular/common';
 import {
   CdkDragDrop,
   DragDropModule,
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { MatCardModule } from '@angular/material/card';
+import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 
 // Import our new Model and Service
+import { MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { JobApplication } from '../../models/job-application.model';
 import { JobService } from '../../services/job.service';
+import { AnalysisDialogComponent } from '../analysis-dialog/analysis-dialog';
 
 @Component({
   selector: 'app-kanban-board',
@@ -21,14 +24,14 @@ import { JobService } from '../../services/job.service';
     DatePipe, // For {{ date | date }}
     DragDropModule, // For Drag and Drop
     MatCardModule, // For Material Cards
-    MatButtonModule,
+    MatButtonModule,MatIconModule // Add this for the button icon
   ],
   templateUrl: './kanban-board.html',
   styleUrls: ['./kanban-board.scss'],
 })
 export class KanbanBoardComponent implements OnInit {
-  // Inject the JobService
   private jobService = inject(JobService);
+  private dialog = inject(MatDialog);
 
   // Expose the Service's Signal directly to the template.
   // Note: 'jobs' is a Signal, so it is called like a function: this.jobs()
@@ -104,5 +107,29 @@ export class KanbanBoardComponent implements OnInit {
         this.jobService.updateJobStatus(movedJob.id, newStatus);
       }
     }
+  }
+
+  /**
+   * Triggers the AI analysis and opens the dialog with results.
+   */
+  openAnalysis(jobId: number | undefined): void {
+    if (!jobId) return;
+
+    // TODO: Add a loading spinner here (we'll do this later)
+    console.log(`Analyzing job ${jobId}...`);
+
+    // this.jobService.analyzeJob(jobId).subscribe({
+    //   next: (result) => {
+    //     // Open the dialog with the result data
+    //     this.dialog.open(AnalysisDialogComponent, {
+    //       width: '500px',
+    //       data: result // Pass the JSON we got from Gemini
+    //     });
+    //   },
+    //   error: (err) => {
+    //     console.error('Analysis failed:', err);
+    //     alert('AI Analysis failed. Please check the backend console.');
+    //   }
+    // });
   }
 }
