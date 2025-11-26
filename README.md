@@ -1,6 +1,6 @@
-# ✈️ CareerPilot AI (formerly JobTracker)
+# ✈️ OfferMagnet
 
-**CareerPilot AI** is a smart, full-stack career management platform designed to streamline your job search. It combines a visual Kanban workflow with Generative AI (Google Gemini) to act as your personal career coach, analyzing your fit for every role you apply to.
+**OfferMagnet** is a smart, full-stack career management platform designed to streamline your job search. It combines a visual Kanban workflow with Generative AI (Google Gemini) to act as your personal career coach, analyzing your fit for every role you apply to.
 
 ## 🌟 Key Features
 
@@ -62,7 +62,7 @@
 4.  **Usage**
     * Open `http://localhost:4200`.
     * Click the **"Analyze"** button on any job card.
-    * Watch CareerPilot AI generate a personalized analysis of your application!
+    * Watch OfferMagnet generate a personalized analysis of your application!
 
 ## 🤝 Contributing
 This is a personal portfolio project demonstrating Full-Stack & AI integration capabilities.
