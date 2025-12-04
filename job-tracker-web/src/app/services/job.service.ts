@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { JobApplication } from '../models/job-application.model';
 import { environment } from '../../environments/environment';
 import { tap } from 'rxjs';
+import { AiAnalysisResult } from '../models/job-application.model';
 
 @Injectable({
   providedIn: 'root',
@@ -85,5 +86,14 @@ export class JobService {
         // In a real app, you might want to revert the drag-and-drop here
       },
     });
+  }
+
+  /**
+   * Calls the AI endpoint to analyze the job.
+   * HTTP POST: /api/Ai/analyze/{jobId}
+   */
+  analyzeJob(jobId: number) {
+    const url = `${environment.apiUrl}/Ai/analyze/${jobId}`;
+    return this.http.post<AiAnalysisResult>(url, {});
   }
 }

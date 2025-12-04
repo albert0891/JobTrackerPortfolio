@@ -1,27 +1,43 @@
-<h2 mat-dialog-title>AI Resume Analysis</h2>
+<h2 mat-dialog-title>AI Analysis: {{ data.jobTitle }}</h2>
+
 <mat-dialog-content>
-  <div class="score-section">
-    <h3>Match Score</h3>
-    <div class="score-circle" [ngClass]="getScoreClass(data.matchScore)">
-      {{ data.matchScore }}%
+  @if (isLoading()) {
+  <div class="loading-container">
+    <p>Consulting Gemini AI...</p>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+  } @if (errorMessage()) {
+  <div class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ errorMessage() }}</p>
+  </div>
+  } @if (analysisData(); as result) {
+  <div class="result-container">
+    <div class="score-section">
+      <div class="score-circle" [ngClass]="getScoreColor(result.matchScore)">
+        <span class="score-value">{{ result.matchScore }}</span>
+        <span class="score-label">Match</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>💪 Strengths</h3>
+      <p>{{ result.strengths }}</p>
+    </div>
+
+    <div class="section">
+      <h3>🔑 Missing Keywords</h3>
+      <p class="hint">Consider adding these to your resume:</p>
+      <mat-chip-set>
+        @for (keyword of result.keywordsToIntegrate; track keyword) {
+        <mat-chip>{{ keyword }}</mat-chip>
+        }
+      </mat-chip-set>
     </div>
   </div>
-
-  <div class="analysis-section">
-    <h3>Strengths</h3>
-    <p>{{ data.strengths }}</p>
-
-    <h3>Missing Keywords</h3>
-    <mat-list>
-      @for (keyword of data.keywordsToIntegrate; track keyword) {
-      <mat-list-item>
-        <mat-icon matListItemIcon>warning</mat-icon>
-        <div matListItemTitle>{{ keyword }}</div>
-      </mat-list-item>
-      }
-    </mat-list>
-  </div>
+  }
 </mat-dialog-content>
+
 <mat-dialog-actions align="end">
-  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button (click)="close()">Close</button>
 </mat-dialog-actions>

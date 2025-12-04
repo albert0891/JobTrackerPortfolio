@@ -1,4 +1,3 @@
-import { Component, OnInit, inject } from '@angular/core';
 import {
   CdkDragDrop,
   DragDropModule,
@@ -6,12 +5,14 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { JobApplication } from '../../models/job-application.model';
 import { JobService } from '../../services/job.service';
+import { AnalysisDialogComponent } from '../analysis-dialog/analysis-dialog';
 
 @Component({
   selector: 'app-kanban-board',
@@ -122,26 +123,23 @@ export class KanbanBoardComponent implements OnInit {
   }
 
   /**
-   * Triggers the AI analysis and opens the dialog with results.
+   * Opens the AI Analysis Dialog.
+   * Triggered by the "Analyze AI" button in the HTML.
    */
   openAnalysis(jobId: number | undefined): void {
     if (!jobId) return;
 
-    // TODO: Add a loading spinner here (we'll do this later)
-    console.log(`Analyzing job ${jobId}...`);
+    // We need to find the job title to display in the dialog header
+    // We can look it up in the current signal list
+    const job = this.jobs().find((j) => j.id === jobId);
+    const title = job ? job.jobTitle : 'Job Application';
 
-    // this.jobService.analyzeJob(jobId).subscribe({
-    //   next: (result) => {
-    //     // Open the dialog with the result data
-    //     this.dialog.open(AnalysisDialogComponent, {
-    //       width: '500px',
-    //       data: result // Pass the JSON we got from Gemini
-    //     });
-    //   },
-    //   error: (err) => {
-    //     console.error('Analysis failed:', err);
-    //     alert('AI Analysis failed. Please check the backend console.');
-    //   }
-    // });
+    this.dialog.open(AnalysisDialogComponent, {
+      width: '500px',
+      data: {
+        jobId: jobId,
+        jobTitle: title,
+      },
+    });
   }
 }

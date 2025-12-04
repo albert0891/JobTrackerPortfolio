@@ -13,3 +13,9 @@ export interface JobApplication {
   aiAnalysisResult?: string;
   generatedCoverLetter?: string;
 }
+
+export interface AiAnalysisResult {
+  matchScore: number;
+  strengths: string;
+  keywordsToIntegrate: string[];
+}
