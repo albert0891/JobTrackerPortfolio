@@ -1,8 +1,6 @@
 using System.Text.Json;
 using JobTracker.Api.Data;
-using JobTracker.Api.Models;
 using Mscc.GenerativeAI;
-using Microsoft.Extensions.Configuration;
 
 namespace JobTracker.Api.Services
 {
@@ -34,8 +32,7 @@ namespace JobTracker.Api.Services
             _googleAI = new GoogleAI(apiKey);
 
             // Use the string name to avoid Enum issues in different versions
-            // "gemini-1.5-flash" is the current fast model
-            _model = _googleAI.GenerativeModel("gemini-1.5-flash");
+            _model = _googleAI.GenerativeModel("gemini-2.5-flash");
         }
 
         public async Task<AiAnalysisDto?> AnalyzeJobAsync(int jobId)

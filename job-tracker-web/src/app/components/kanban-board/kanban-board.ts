@@ -1,30 +1,28 @@
 import { Component, OnInit, inject } from '@angular/core';
-// Import DatePipe to format dates in HTML
 import {
   CdkDragDrop,
   DragDropModule,
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-
-// Import our new Model and Service
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { JobApplication } from '../../models/job-application.model';
 import { JobService } from '../../services/job.service';
-import { AnalysisDialogComponent } from '../analysis-dialog/analysis-dialog';
 
 @Component({
   selector: 'app-kanban-board',
   standalone: true,
   imports: [
+    NgTemplateOutlet,
     DatePipe, // For {{ date | date }}
     DragDropModule, // For Drag and Drop
     MatCardModule, // For Material Cards
-    MatButtonModule,MatIconModule // Add this for the button icon
+    MatButtonModule,
+    MatIconModule, // Add this for the button icon
   ],
   templateUrl: './kanban-board.html',
   styleUrls: ['./kanban-board.scss'],
@@ -48,8 +46,22 @@ export class KanbanBoardComponent implements OnInit {
     REJECTED: 'Rejected',
   };
 
+  getStatusListId(status: string): string {
+    switch (status) {
+      case this.statuses.APPLIED:
+        return 'applied-list';
+      case this.statuses.INTERVIEWING:
+        return 'interviewing-list';
+      case this.statuses.OFFER:
+        return 'offer-list';
+      case this.statuses.REJECTED:
+        return 'rejected-list';
+      default:
+        return 'applied-list';
+    }
+  }
+
   ngOnInit(): void {
-    // Initial fetch of data when component loads
     this.jobService.getAllJobs();
   }
 

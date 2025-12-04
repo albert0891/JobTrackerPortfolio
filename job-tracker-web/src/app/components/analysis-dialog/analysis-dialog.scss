@@ -1,0 +1,30 @@
+.score-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.score-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
+.high-score {
+  background-color: #4caf50;
+} /* Green */
+.med-score {
+  background-color: #ff9800;
+} /* Orange */
+.low-score {
+  background-color: #f44336;
+} /* Red */
+h3 {
+  color: #555;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}

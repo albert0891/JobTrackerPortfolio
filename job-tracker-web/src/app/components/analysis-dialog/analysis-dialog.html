@@ -1,1 +1,27 @@
-<p>analysis-dialog works!</p>
+<h2 mat-dialog-title>AI Resume Analysis</h2>
+<mat-dialog-content>
+  <div class="score-section">
+    <h3>Match Score</h3>
+    <div class="score-circle" [ngClass]="getScoreClass(data.matchScore)">
+      {{ data.matchScore }}%
+    </div>
+  </div>
+
+  <div class="analysis-section">
+    <h3>Strengths</h3>
+    <p>{{ data.strengths }}</p>
+
+    <h3>Missing Keywords</h3>
+    <mat-list>
+      @for (keyword of data.keywordsToIntegrate; track keyword) {
+      <mat-list-item>
+        <mat-icon matListItemIcon>warning</mat-icon>
+        <div matListItemTitle>{{ keyword }}</div>
+      </mat-list-item>
+      }
+    </mat-list>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>
