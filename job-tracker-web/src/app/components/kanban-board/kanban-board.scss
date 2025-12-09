@@ -1,73 +1,115 @@
 .board-container {
   display: flex;
-  justify-content: space-around;
-  padding: 20px;
-  background-color: #f0f2f5; /* Light background */
+  align-items: flex-start; // Align columns to top
+  gap: 24px; // Use gap instead of margin
+  padding-bottom: 20px;
+  height: 100%;
 }
 
 .column {
   display: flex;
   flex-direction: column;
-  min-width: 300px;
-  max-width: 300px;
-  margin: 0 10px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-width: 320px;
+  max-width: 320px;
+  background-color: #ebecf0; // Classic Trello grey
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  
+  // Default top border
+  border-top: 4px solid transparent; 
 
   h2 {
-    padding: 15px;
+    padding: 12px 16px;
     margin: 0;
-    font-size: 1.2em;
+    font-size: 1rem;
     font-weight: 600;
-    color: #3f51b5; /* Primary color */
-    border-bottom: 2px solid #3f51b5;
-    text-align: center;
+    color: #172b4d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 
+// --- Column Specific Colors ---
+.status-applied { border-top-color: #4285f4; }      // Blue
+.status-interviewing { border-top-color: #fbbc05; } // Yellow
+.status-offer { border-top-color: #34a853; }        // Green
+.status-rejected { border-top-color: #ea4335; }     // Red
+
 .job-list {
-  min-height: 100px; /* Ensures the list is droppable when empty */
-  padding: 10px;
-  flex-grow: 1;
+  min-height: 100px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px; // Space between cards
 }
 
 mat-card {
-  margin-bottom: 8px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
   cursor: grab;
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-  
-  mat-card-title {
-    font-size: 1.1em;
-    font-weight: 500;
+  background: white;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px); // Subtle lift effect
   }
+
+  mat-card-header {
+    padding: 16px 16px 0 16px;
+  }
+
+  mat-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
   mat-card-subtitle {
-    color: #555;
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  mat-card-content {
+    padding: 8px 16px 16px 16px;
+    p {
+      font-size: 0.8rem;
+      color: #6b778c;
+      margin: 0;
+    }
+  }
+
+  mat-card-actions {
+    padding: 8px;
+    border-top: 1px solid #f4f5f7;
   }
 }
 
-/* Styles for the drag/drop process */
+// --- Drag & Drop Visuals ---
+
 .cdk-drag-preview {
   box-sizing: border-box;
-  border-radius: 4px;
-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
-              0 8px 10px 1px rgba(0, 0, 0, 0.14),
-              0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  background-color: white;
 }
 
 .cdk-drag-placeholder {
   opacity: 0;
 }
 
-/* Style for the card being dragged */
 .cdk-drag-animating {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 .placeholder {
   text-align: center;
-  color: #ccc;
-  padding: 20px;
-  border: 1px dashed #ccc;
-  border-radius: 4px;
+  color: #6b778c;
+  padding: 30px 20px;
+  border: 2px dashed #dfe1e6;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background-color: rgba(255,255,255,0.3);
 }

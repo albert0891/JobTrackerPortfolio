@@ -1,40 +1,91 @@
 <div class="kanban-board">
   <div class="board-container">
-    <ng-container *ngTemplateOutlet="columnTemplate; context: { $implicit: statuses.APPLIED, title: 'Applied' }"></ng-container>
-    <ng-container *ngTemplateOutlet="columnTemplate; context: { $implicit: statuses.INTERVIEWING, title: 'Interviewing' }"></ng-container>
-    <ng-container *ngTemplateOutlet="columnTemplate; context: { $implicit: statuses.OFFER, title: 'Offer' }"></ng-container>
-    <ng-container *ngTemplateOutlet="columnTemplate; context: { $implicit: statuses.REJECTED, title: 'Rejected' }"></ng-container>
+    <ng-container
+      *ngTemplateOutlet="
+        columnTemplate;
+        context: {
+          $implicit: appliedJobs(),
+          title: 'Applied',
+          status: statuses.APPLIED,
+          statusClass: 'status-applied'
+        }
+      "
+    ></ng-container>
+
+    <ng-container
+      *ngTemplateOutlet="
+        columnTemplate;
+        context: {
+          $implicit: interviewingJobs(),
+          title: 'Interviewing',
+          status: statuses.INTERVIEWING,
+          statusClass: 'status-interviewing'
+        }
+      "
+    ></ng-container>
+
+    <ng-container
+      *ngTemplateOutlet="
+        columnTemplate;
+        context: {
+          $implicit: offerJobs(),
+          title: 'Offer',
+          status: statuses.OFFER,
+          statusClass: 'status-offer'
+        }
+      "
+    ></ng-container>
+
+    <ng-container
+      *ngTemplateOutlet="
+        columnTemplate;
+        context: {
+          $implicit: rejectedJobs(),
+          title: 'Rejected',
+          status: statuses.REJECTED,
+          statusClass: 'status-rejected'
+        }
+      "
+    ></ng-container>
   </div>
 </div>
 
-<ng-template #columnTemplate let-status let-title="title">
-  <div class="column">
-    <h2>{{ title }} ({{ getJobsByStatus(status).length }})</h2>
+<ng-template
+  #columnTemplate
+  let-jobs
+  let-title="title"
+  let-status="status"
+  let-statusClass="statusClass"
+>
+  <div class="column" [class]="statusClass">
+    <h2>{{ title }} ({{ jobs.length }})</h2>
+
     <div
       cdkDropList
-      [cdkDropListData]="getJobsByStatus(status)"
+      [cdkDropListData]="jobs"
       class="job-list"
-      [id]="getStatusListId(status)" 
+      [id]="getStatusListId(status)"
       [cdkDropListConnectedTo]="columnIds"
-      (cdkDropListDropped)="drop($event)">
-      @for (job of getJobsByStatus(status); track job.id) {
-        <mat-card cdkDrag>
-          <mat-card-header>
-            <mat-card-title>{{ job.jobTitle }}</mat-card-title>
-            <mat-card-subtitle>{{ job.companyName }}</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <p>Applied: {{ job.dateApplied | date : 'mediumDate' }}</p>
-          </mat-card-content>
-            <mat-card-actions align="end">
-              <button mat-button color="primary" (click)="openAnalysis(job.id)">
-                <mat-icon>psychology</mat-icon> Analyze
-              </button>
-            </mat-card-actions>
-        </mat-card>
-      }
-      @if (getJobsByStatus(status).length === 0) {
-        <div class="placeholder">Drop applications here</div>
+      (cdkDropListDropped)="drop($event)"
+    >
+      @for (job of jobs; track job.id) {
+      <mat-card cdkDrag>
+        <mat-card-header>
+          <mat-card-title>{{ job.jobTitle }}</mat-card-title>
+          <mat-card-subtitle>{{ job.companyName }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>Applied: {{ job.dateApplied | date : 'mediumDate' }}</p>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+          <button mat-stroked-button color="primary" (click)="openAnalysis(job.id)">
+            <mat-icon>psychology</mat-icon> Analyze
+          </button>
+        </mat-card-actions>
+      </mat-card>
+      } @if (jobs.length === 0) {
+      <div class="placeholder">Drop applications here</div>
       }
     </div>
   </div>

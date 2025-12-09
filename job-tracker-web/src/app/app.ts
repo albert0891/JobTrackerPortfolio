@@ -1,12 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  // Make sure KanbanBoardComponent is in the imports array
-  imports: [CommonModule, RouterOutlet],
+  imports: [CommonModule, RouterOutlet, MatToolbarModule, MatButtonModule, MatIconModule],
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
 })

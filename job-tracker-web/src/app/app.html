@@ -1,4 +1,16 @@
-<header>
-  <h1>{{ title }}</h1>
-</header>
-<router-outlet />
+<mat-toolbar class="app-toolbar">
+  <div class="toolbar-content">
+    <div class="branding">
+      <mat-icon class="logo-icon">sensors</mat-icon>
+      <span class="app-title">{{ title }}</span>
+    </div>
+
+    <span class="spacer"></span>
+
+    <button mat-flat-button color="primary"><mat-icon>add</mat-icon> New Job</button>
+  </div>
+</mat-toolbar>
+
+<main class="content">
+  <router-outlet />
+</main>

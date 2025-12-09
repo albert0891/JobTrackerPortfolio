@@ -5,7 +5,7 @@ import {
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
@@ -47,6 +47,23 @@ export class KanbanBoardComponent implements OnInit {
     REJECTED: 'Rejected',
   };
 
+  // Computed Signals cache the result. They only recalculate when 'this.jobs()' changes.
+  // This solves the performance issue during drag-and-drop.
+  public appliedJobs = computed(() =>
+    this.jobs().filter((j) => j.status === this.statuses.APPLIED)
+  );
+  public interviewingJobs = computed(() =>
+    this.jobs().filter((j) => j.status === this.statuses.INTERVIEWING)
+  );
+  public offerJobs = computed(() => this.jobs().filter((j) => j.status === this.statuses.OFFER));
+  public rejectedJobs = computed(() =>
+    this.jobs().filter((j) => j.status === this.statuses.REJECTED)
+  );
+
+  ngOnInit(): void {
+    this.jobService.getAllJobs();
+  }
+
   getStatusListId(status: string): string {
     switch (status) {
       case this.statuses.APPLIED:
@@ -60,10 +77,6 @@ export class KanbanBoardComponent implements OnInit {
       default:
         return 'applied-list';
     }
-  }
-
-  ngOnInit(): void {
-    this.jobService.getAllJobs();
   }
 
   /**
