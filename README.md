@@ -1,43 +1,47 @@
 # 🧲 OfferMagnet (AI-Powered Job Tracker)
 
-OfferMagnet is a modern, full-stack intelligent job application tracker. It helps users manage their job search pipeline using a Kanban board and leverages Google Gemini AI to analyze resume-to-job fit, providing match scores and keyword optimization suggestions.
+**OfferMagnet** is a modern, full-stack intelligent job application tracker designed to streamline your job search process. It combines a drag-and-drop Kanban board with Google Gemini AI to analyze job descriptions against your resume, providing actionable insights to increase your interview chances.
 
-## 🌟 Features
+## 🌟 Key Features
 
-- **Smart Kanban Board:** Drag-and-drop interface to manage applications across stages (Applied, Interviewing, Offer, Rejected).
-- **AI Analysis (Gemini):** Integrates Google's Gemini 1.5 Flash model to analyze job descriptions against your resume, extracting key missing skills and providing a match score.
-- **Data Persistence:** Uses a Dockerized PostgreSQL database with Entity Framework Core for reliable data management.
-- **Modern Architecture:** Built with .NET 9 Web API (Clean Architecture) and Angular 17+ (Signals, Standalone Components).
+- **📋 Smart Kanban Board:** Visualize your job search pipeline with an intuitive drag-and-drop interface across four stages: _Applied_, _Interviewing_, _Offer_, and _Rejected_.
+- **🧠 AI-Powered Analysis:** Seamlessly integrated with **Google Gemini 1.5 Flash**. Click "Analyze" on any job card to get:
+  - A match score (0-100).
+  - Key strengths analysis.
+  - Missing keywords suggestions to optimize your resume.
+- **🖱️ Drag & Drop Interface:** Built with Angular CDK for smooth, responsive interactions.
+- **💾 Robust Persistence:** Data is securely stored using a Dockerized **PostgreSQL** database managed via **Entity Framework Core**.
+- **🎨 Modern UI:** A clean, glassmorphism-inspired design using Angular Material.
 
-## 🛠️ Tech Stack
+## 🛠️ Technology Stack
 
-**Frontend**
+### Frontend (Web)
 
-- **Framework:** Angular 17+
-- **State Management:** Angular Signals
-- **UI Library:** Angular Material & CDK (Drag & Drop)
-- **Styling:** SCSS
+- **Framework:** Angular 17+ (Standalone Components, Signals)
+- **UI Library:** Angular Material & Angular CDK
+- **Styling:** SCSS with modern CSS variables
+- **State Management:** Angular Signals (Native reactive state)
 
-**Backend**
+### Backend (API)
 
 - **Framework:** .NET 9 Web API
 - **Language:** C#
-- **AI Integration:** Google Gemini (via `Mscc.GenerativeAI`)
-- **Database:** PostgreSQL (running in Docker)
+- **Database:** PostgreSQL 15 (Docker Container)
 - **ORM:** Entity Framework Core
+- **AI Integration:** Google Gemini API (via `Mscc.GenerativeAI`)
+- **Documentation:** Swagger / OpenAPI
 
 ## ⚙️ Prerequisites
 
-Before you begin, ensure you have the following installed:
+Ensure you have the following installed on your local machine:
 
-1. **Node.js** (LTS version)
-2. **.NET 9 SDK**
-3. **Docker Desktop** (must be running)
-4. **Google Gemini API Key** (Get one from Google AI Studio)
+1.  **Node.js** (LTS version)
+2.  **Angular CLI**
+3.  **.NET 9 SDK**
+4.  **Docker Desktop** (Must be running for the database)
+5.  **Google Gemini API Key** (Obtain from [Google AI Studio](https://aistudio.google.com/))
 
 ## 🚀 Installation & Setup Guide
-
-Follow these steps to run the project locally.
 
 ### 1. Clone the Repository
 
@@ -49,62 +53,77 @@ cd OfferMagnet
 ### 2. Backend Setup (API & Database)
 
 **Step A: Secure your AI API Key**
-We use .NET User Secrets to keep your API key safe (not committed to Git).
+We use .NET User Secrets to keep your API key secure.
 
 ```bash
 cd JobTracker.Api
 
-# 1. Initialize User Secrets for the project (Crucial Step!)
+# Initialize User Secrets
 dotnet user-secrets init
 
-# 2. Set your Google Gemini API Key
+# Set your Google Gemini API Key
 dotnet user-secrets set "Gemini:ApiKey" "YOUR_ACTUAL_GOOGLE_API_KEY_HERE"
 ```
 
 **Step B: Start the Database**
-Make sure Docker Desktop is running, then start the PostgreSQL container.
+Ensure Docker Desktop is running, then spin up the PostgreSQL container:
 
 ```bash
-# Still in the backend folder
+# Still in the JobTracker.Api folder
 docker-compose up -d
 ```
 
 **Step C: Run the API**
+Start the backend server. It will automatically apply database migrations and seed initial data.
 
 ```bash
 dotnet watch run
 ```
 
-The Backend API will start (usually at `https://localhost:7xxx`). Keep this terminal open.
+_The API will typically start at `http://localhost:5023` or `https://localhost:7xxx`. Check your terminal output._
 
 ### 3. Frontend Setup (Web App)
 
-Open a new terminal window and navigate to the frontend folder.
+Open a new terminal window and navigate to the frontend directory:
 
 ```bash
 cd job-tracker-web
 
-# 1. Install dependencies
+# Install dependencies
 npm install
 
-# 2. Run the application
+# Start the development server
 ng serve -o
 ```
 
-The application will open automatically at `http://localhost:4200`.
+_The application will automatically open at `http://localhost:4200`._
 
-## 📌 Usage
+## 📌 How to Use
 
-- **Kanban Board:** Open `http://localhost:4200`. You will see seeded data (if configured) or an empty board.
-- **Add Job:** Use the API (Swagger) or UI to add jobs.
-- **Drag & Drop:** Move cards between columns to update their status automatically.
-- **AI Analysis:** Click the "Analyze AI" button on a job card (in the 'Applied' column) to trigger the Gemini analysis.
-- **Swagger Documentation:** Visit `https://localhost:7xxx/swagger` to test backend endpoints directly.
+1.  **Dashboard:** Navigate to `http://localhost:4200` to view your Kanban board.
+2.  **Add a Job:** Click the **"New Job"** button in the top toolbar. Fill in the details (Title, Company, Status, JD) and save.
+3.  **Manage Status:** Drag and drop cards between columns (e.g., from _Applied_ to _Interviewing_) to update their status instantly.
+4.  **AI Analysis:**
+    - Locate a job card in the **Applied** column.
+    - Click the **"Analyze"** button.
+    - Wait for Gemini AI to evaluate the job description and provide a match score and keyword suggestions.
 
-## 🤝 Contributing
+## 📂 Project Structure
 
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feat/amazing-feature`).
-3. Commit your changes (`git commit -m 'feat: Add amazing feature'`).
-4. Push to the branch (`git push origin feat/amazing-feature`).
-5. Open a Pull Request.
+```text
+OfferMagnet/
+├── JobTracker.Api/           # .NET 9 Web API
+│   ├── Controllers/          # API Endpoints (JobApplications, AI)
+│   ├── Data/                 # EF Core Context & Migrations
+│   ├── Models/               # C# Entities & DTOs
+│   ├── Services/             # Business Logic (AI, Job management)
+│   └── docker-compose.yml    # PostgreSQL Configuration
+│
+└── job-tracker-web/          # Angular 17+ Frontend
+    ├── src/app/
+    │   ├── components/       # Standalone Components (Kanban, Dialogs)
+    │   ├── models/           # TypeScript Interfaces
+    │   ├── services/         # HTTP Services & Signals
+    │   └── app.routes.ts     # Routing Configuration
+    └── styles.scss           # Global Styles & Theming
+```
