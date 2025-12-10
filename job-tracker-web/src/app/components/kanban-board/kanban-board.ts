@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+
 import { JobApplication } from '../../models/job-application.model';
 import { JobService } from '../../services/job.service';
 import { AnalysisDialogComponent } from '../analysis-dialog/analysis-dialog';

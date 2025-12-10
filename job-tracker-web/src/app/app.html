@@ -2,7 +2,9 @@
   <mat-icon class="logo-icon">sensors</mat-icon>
   <span class="brand-name">{{ title }}</span>
   <span class="spacer"></span>
-  <button mat-flat-button color="primary" class="add-btn"><mat-icon>add</mat-icon> New Job</button>
+  <button mat-flat-button color="primary" class="add-btn" (click)="openAddJobDialog()">
+    <mat-icon>add</mat-icon> New Job
+  </button>
 </mat-toolbar>
 
 <main class="content">
