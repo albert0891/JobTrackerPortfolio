@@ -1,99 +1,114 @@
 .board-container {
   display: flex;
-  align-items: flex-start; // Align columns to top
-  gap: 24px; // Use gap instead of margin
-  padding-bottom: 20px;
+  align-items: flex-start;
+  gap: 24px; // Good spacing between columns
+  padding: 32px 40px; // More breathing room on edges
   height: 100%;
+  box-sizing: border-box;
 }
 
 .column {
   display: flex;
   flex-direction: column;
-  min-width: 320px;
-  max-width: 320px;
-  background-color: #ebecf0; // Classic Trello grey
-  border-radius: 12px;
-  padding: 8px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  min-width: 340px;
+  max-width: 340px;
   
-  // Default top border
-  border-top: 4px solid transparent; 
-
-  h2 {
-    padding: 12px 16px;
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #172b4d;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+  background-color: #F3F4F6; 
+  border-radius: 12px;
+  padding: 12px;
 }
 
-// --- Column Specific Colors ---
-.status-applied { border-top-color: #4285f4; }      // Blue
-.status-interviewing { border-top-color: #fbbc05; } // Yellow
-.status-offer { border-top-color: #34a853; }        // Green
-.status-rejected { border-top-color: #ea4335; }     // Red
+h2 {
+  padding: 8px 8px 16px 8px;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #42526E; // Softer text color
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: uppercase; // Small caps header
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+}
 
 .job-list {
-  min-height: 100px;
-  padding: 4px;
+  min-height: 150px;
   display: flex;
   flex-direction: column;
-  gap: 12px; // Space between cards
+  gap: 12px;
 }
 
 mat-card {
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-  cursor: grab;
+  border: 1px solid rgba(223, 225, 230, 0.5);
+  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.05); 
   background: white;
-  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+  cursor: grab;
+  
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  
 
   &:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    transform: translateY(-2px); // Subtle lift effect
+    box-shadow: 0 4px 8px rgba(9, 30, 66, 0.1);
+    border-color: #B3D4FF; // Subtle highlight on hover
+  }
+
+  &:active {
+    cursor: grabbing;
   }
 
   mat-card-header {
-    padding: 16px 16px 0 16px;
+    padding: 16px 16px 8px 16px;
   }
 
   mat-card-title {
     font-size: 1rem;
     font-weight: 600;
+    color: #172b4d;
     line-height: 1.4;
   }
 
   mat-card-subtitle {
     font-size: 0.85rem;
     margin-top: 4px;
+    color: #5E6C84;
   }
 
   mat-card-content {
-    padding: 8px 16px 16px 16px;
+    padding: 0 16px 16px 16px;
     p {
       font-size: 0.8rem;
-      color: #6b778c;
-      margin: 0;
+      color: #6B778C;
+      font-weight: 500;
     }
   }
 
   mat-card-actions {
-    padding: 8px;
-    border-top: 1px solid #f4f5f7;
+    padding: 8px 16px 12px 16px;
+    border-top: none; // Cleaner look without the line
+    display: flex;
+    justify-content: flex-end;
+    
+    // Make the button small and subtle until hovered
+    button {
+      font-size: 0.8rem;
+      padding: 0 12px;
+      height: 32px;
+      line-height: 32px;
+    }
   }
 }
 
 // --- Drag & Drop Visuals ---
 
 .cdk-drag-preview {
+  transition: none;
   box-sizing: border-box;
   border-radius: 8px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 20px rgba(9, 30, 66, 0.25); // Deep shadow when lifting
   background-color: white;
+  cursor: grabbing;
 }
 
 .cdk-drag-placeholder {
@@ -101,15 +116,17 @@ mat-card {
 }
 
 .cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 .placeholder {
-  text-align: center;
-  color: #6b778c;
-  padding: 30px 20px;
-  border: 2px dashed #dfe1e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  color: #6B778C;
+  border: 2px dashed rgba(9, 30, 66, 0.08);
   border-radius: 8px;
-  font-size: 0.9rem;
-  background-color: rgba(255,255,255,0.3);
+  font-size: 0.85rem;
+  background-color: transparent;
 }

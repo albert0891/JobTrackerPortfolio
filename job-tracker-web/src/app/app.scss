@@ -2,33 +2,25 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.8); // [MODERN UI]: Glassmorphism effect
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0,0,0,0.08); // Subtle separator instead of shadow
   color: #172b4d; // Dark text
-  border-bottom: 1px solid #dfe1e6;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05); // Lighter shadow
+  height: 64px;
+  display: flex;
+  align-items: center;
   padding: 0 24px;
 }
 
-.toolbar-content {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.logo-icon {
+  margin-right: 12px;
+  color: #4285f4; // Brand color for the logo
 }
 
-.branding {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  
-  .logo-icon {
-    color: #0052cc; // Primary Blue for logo
-  }
-  
-  .app-title {
-    font-weight: 600;
-    font-size: 1.1rem;
-    letter-spacing: -0.01em;
-  }
+.brand-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: -0.5px; // Tighter tracking looks more modern
 }
 
 .spacer {
@@ -36,9 +28,13 @@
 }
 
 .content {
-  // Ensure content starts below the toolbar
-  padding: 24px;
-  height: calc(100vh - 64px); 
-  box-sizing: border-box;
+  height: calc(100vh - 64px);
   overflow-x: auto;
+  overflow-y: hidden; // Let the board container handle Y scroll
+  background-color: #F9FAFC; // Very subtle grey for the canvas area
+}
+
+.add-btn {
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
