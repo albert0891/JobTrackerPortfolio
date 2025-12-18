@@ -10,5 +10,6 @@ namespace JobTracker.Api.Services
         Task<JobApplication> CreateJobAsync(JobApplication job);
         Task<bool> UpdateJobStatusAsync(int id, string status);
         Task<bool> DeleteJobAsync(int id);
+        Task<JobApplication?> UpdateJobAsync(int id, JobApplication job);
     }
 }

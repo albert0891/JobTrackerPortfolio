@@ -89,6 +89,34 @@ export class JobService {
   }
 
   /**
+   * Updates full job details.
+   * HTTP PUT: /api/JobApplications/{id}
+   */
+  updateJob(job: JobApplication) {
+    const url = `${this.apiUrl}/${job.id}`;
+    return this.http.put(url, job).pipe(
+      tap(() => {
+        // Update local signal to reflect changes immediately
+        this.jobsSignal.update((jobs) => jobs.map((j) => (j.id === job.id ? job : j)));
+      })
+    );
+  }
+
+  /**
+   * Deletes a job.
+   * HTTP DELETE: /api/JobApplications/{id}
+   */
+  deleteJob(jobId: number) {
+    const url = `${this.apiUrl}/${jobId}`;
+    return this.http.delete(url).pipe(
+      tap(() => {
+        // Remove from local signal
+        this.jobsSignal.update((jobs) => jobs.filter((j) => j.id !== jobId));
+      })
+    );
+  }
+
+  /**
    * Calls the AI endpoint to analyze the job.
    * HTTP POST: /api/Ai/analyze/{jobId}
    */

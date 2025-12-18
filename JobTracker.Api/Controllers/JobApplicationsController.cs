@@ -9,7 +9,7 @@ namespace JobTracker.Api.Controllers
     public class JobApplicationsController : ControllerBase
     {
         // Depend on the Interface, not the DbContext
-        private readonly IJobService _jobService; 
+        private readonly IJobService _jobService;
 
         public JobApplicationsController(IJobService jobService)
         {
@@ -57,7 +57,7 @@ namespace JobTracker.Api.Controllers
             {
                 return BadRequest("Status cannot be empty.");
             }
-            
+
             var success = await _jobService.UpdateJobStatusAsync(id, statusUpdate.Status);
 
             if (!success)
@@ -74,8 +74,27 @@ namespace JobTracker.Api.Controllers
         public async Task<IActionResult> DeleteJobApplication(int id)
         {
             var success = await _jobService.DeleteJobAsync(id);
-            
+
             if (!success)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        // PUT: api/JobApplications/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutJobApplication(int id, JobApplication jobApplication)
+        {
+            if (id != jobApplication.Id)
+            {
+                return BadRequest();
+            }
+
+            var updatedJob = await _jobService.UpdateJobAsync(id, jobApplication);
+
+            if (updatedJob == null)
             {
                 return NotFound();
             }

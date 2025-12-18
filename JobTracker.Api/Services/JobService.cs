@@ -15,7 +15,6 @@ namespace JobTracker.Api.Services
 
         public async Task<IEnumerable<JobApplication>> GetAllJobsAsync()
         {
-            // Business logic goes here (e.g., filtering inactive jobs)
             return await _context.JobApplications.ToListAsync();
         }
 
@@ -38,7 +37,7 @@ namespace JobTracker.Api.Services
 
             // Update the status property
             job.Status = status;
-            
+
             // Mark the entity as modified and save changes
             _context.Entry(job).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -53,6 +52,22 @@ namespace JobTracker.Api.Services
             _context.JobApplications.Remove(job);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<JobApplication?> UpdateJobAsync(int id, JobApplication updatedJob)
+        {
+            var existingJob = await _context.JobApplications.FindAsync(id);
+            if (existingJob == null) return null;
+
+            // Ideally use a library like AutoMapper, but manual mapping is fine for now.
+            existingJob.JobTitle = updatedJob.JobTitle;
+            existingJob.CompanyName = updatedJob.CompanyName;
+            existingJob.JobDescription = updatedJob.JobDescription;
+            existingJob.Status = updatedJob.Status;
+            existingJob.DateApplied = updatedJob.DateApplied;
+
+            await _context.SaveChangesAsync();
+            return existingJob;
         }
     }
 }
