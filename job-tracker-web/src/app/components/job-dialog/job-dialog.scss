@@ -1,0 +1,34 @@
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 500px; // Slightly wider for better reading
+  padding-top: 10px;
+}
+
+.row {
+  display: flex;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  width: 50%;
+}
+
+textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.dialog-actions {
+  display: flex;
+  width: 100%;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}

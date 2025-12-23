@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterOutlet } from '@angular/router';
 
-import { AddJobDialogComponent } from './components/add-job-dialog/add-job-dialog';
+import { JobDialogComponent } from './components/job-dialog/job-dialog';
 
 @Component({
   selector: 'app-root',
@@ -21,9 +21,10 @@ export class App {
   private dialog = inject(MatDialog);
 
   openAddJobDialog() {
-    this.dialog.open(AddJobDialogComponent, {
+    this.dialog.open(JobDialogComponent, {
       width: '600px',
       disableClose: true, // Force user to click Cancel or Save
+      data: { job: null }, // Pass null to indicate Add Mode
     });
   }
 }

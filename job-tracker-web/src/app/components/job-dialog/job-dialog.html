@@ -1,1 +1,64 @@
-<p>job-dialog works!</p>
+<h2 mat-dialog-title>
+  {{ isEditMode ? 'Edit Job' : 'Add New Job' }}
+</h2>
+
+<form [formGroup]="jobForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="form-container">
+    <div class="row">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Job Title</mat-label>
+        <input matInput formControlName="jobTitle" placeholder="e.g. Frontend Engineer" />
+        <mat-error>Title is required</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Company</mat-label>
+        <input matInput formControlName="companyName" placeholder="e.g. Google" />
+        <mat-error>Company is required</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          @for (status of statuses; track status) {
+          <mat-option [value]="status">{{ status }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>Date Applied</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="dateApplied" />
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Job Description</mat-label>
+      <textarea
+        matInput
+        formControlName="jobDescription"
+        rows="6"
+        placeholder="Paste the JD here..."
+      ></textarea>
+    </mat-form-field>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    @if (isEditMode) {
+    <button mat-button color="warn" type="button" (click)="onDelete()">
+      <mat-icon>delete</mat-icon> Delete
+    </button>
+    }
+
+    <span class="spacer"></span>
+
+    <button mat-button type="button" (click)="close()">Cancel</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="jobForm.invalid">
+      {{ isEditMode ? 'Update' : 'Save' }}
+    </button>
+  </mat-dialog-actions>
+</form>

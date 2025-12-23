@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { JobApplication } from '../../models/job-application.model';
 import { JobService } from '../../services/job.service';
 import { AnalysisDialogComponent } from '../analysis-dialog/analysis-dialog';
+import { JobDialogComponent } from '../job-dialog/job-dialog';
 
 @Component({
   selector: 'app-kanban-board',
@@ -77,6 +78,26 @@ export class KanbanBoardComponent implements OnInit {
         return 'rejected-list';
       default:
         return 'applied-list';
+    }
+  }
+
+  /**
+   * Method to open dialog in Edit Mode
+   */
+  editJob(job: JobApplication): void {
+    this.dialog.open(JobDialogComponent, {
+      width: '600px',
+      disableClose: true,
+      data: { job: job }, // Pass the job object to indicate Edit Mode
+    });
+  }
+
+  /**
+   * Deletes a specific job application after prompting the user for confirmation.
+   */
+  deleteJob(jobId: number): void {
+    if (confirm('Delete this job?')) {
+      this.jobService.deleteJob(jobId).subscribe();
     }
   }
 

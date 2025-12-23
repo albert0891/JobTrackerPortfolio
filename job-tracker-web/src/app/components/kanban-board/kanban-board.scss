@@ -47,11 +47,14 @@ mat-card {
   cursor: grab;
   
   transition: box-shadow 0.2s ease, transform 0.2s ease;
-  
 
   &:hover {
     box-shadow: 0 4px 8px rgba(9, 30, 66, 0.1);
     border-color: #B3D4FF; // Subtle highlight on hover
+
+    .delete-btn {
+      opacity: 1; 
+    }
   }
 
   &:active {
@@ -98,6 +101,20 @@ mat-card {
       line-height: 32px;
     }
   }
+}
+
+.clickable-card {
+  cursor: pointer;
+  position: relative; // For positioning the delete button if needed
+}
+
+.delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  transform: scale(0.8);
+  opacity: 0; // Hide by default
+  transition: opacity 0.2s;
 }
 
 // --- Drag & Drop Visuals ---

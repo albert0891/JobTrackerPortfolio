@@ -69,10 +69,18 @@
       (cdkDropListDropped)="drop($event)"
     >
       @for (job of jobs; track job.id) {
-      <mat-card cdkDrag>
+      <mat-card cdkDrag (click)="editJob(job)" class="clickable-card">
         <mat-card-header>
           <mat-card-title>{{ job.jobTitle }}</mat-card-title>
           <mat-card-subtitle>{{ job.companyName }}</mat-card-subtitle>
+          <button
+            mat-icon-button
+            color="warn"
+            class="delete-btn"
+            (click)="$event.stopPropagation(); deleteJob(job.id!)"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
         </mat-card-header>
         <mat-card-content>
           <p>Applied: {{ job.dateApplied | date : 'mediumDate' }}</p>
