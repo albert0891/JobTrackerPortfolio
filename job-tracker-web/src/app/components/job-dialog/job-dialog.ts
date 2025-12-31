@@ -63,8 +63,9 @@ export class JobDialogComponent {
           error: (err) => console.error('Update failed', err),
         });
       } else {
-        // For new jobs, ID is handled by backend, so we can ignore it or set to 0
-        this.jobService.addJob(formValue).subscribe({
+        // Remove id from payload entirely so backend handles generation (avoids null to int error)
+        const { id, ...newJob } = formValue;
+        this.jobService.addJob(newJob as JobApplication).subscribe({
           next: () => this.dialogRef.close(true),
           error: (err) => console.error('Create failed', err),
         });
