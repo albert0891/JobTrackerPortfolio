@@ -1,60 +1,109 @@
+// 1. App Shell / Canvas
+.kanban-board {
+  height: 100%;
+  display: flex; // Ensure it behaves as a flex container
+  flex-direction: column;
+  overflow: hidden; // Force hide any outer scrollbars
+}
+
 .board-container {
   display: flex;
   align-items: flex-start;
-  gap: 24px; // Good spacing between columns
-  padding: 32px 40px; // More breathing room on edges
-  height: 100%;
+  gap: 24px;
+  padding: 32px 40px;
+  flex: 1; // Use 'flex: 1' to fill available space intelligently.
+
   box-sizing: border-box;
+
+  // Horizontal scroll only
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
+// 2. Columns
 .column {
   display: flex;
   flex-direction: column;
   min-width: 340px;
   max-width: 340px;
-  
-  background-color: #F3F4F6; 
+
+  background-color: #f3f4f6;
   border-radius: 12px;
   padding: 12px;
+
+  max-height: 100%;
+
+  // Important: box-sizing ensures padding doesn't add to width/height
+  box-sizing: border-box;
+
+  // Default top border
+  border-top: 4px solid transparent;
 }
+
+// Status Colors
+.status-applied {
+  border-top-color: #4285f4;
+} // Blue
+.status-interviewing {
+  border-top-color: #fbbc05;
+} // Yellow
+.status-offer {
+  border-top-color: #34a853;
+} // Green
+.status-rejected {
+  border-top-color: #ea4335;
+} // Red
 
 h2 {
   padding: 8px 8px 16px 8px;
   margin: 0;
-  font-size: 0.95rem;
   font-weight: 600;
-  color: #42526E; // Softer text color
+  color: #42526e;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  text-transform: uppercase; // Small caps header
+  text-transform: uppercase;
   letter-spacing: 0.05em;
   font-size: 0.75rem;
+  flex-shrink: 0;
 }
 
+// 3. Scrollable List Area
 .job-list {
-  min-height: 150px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+
+  // Ensure list has size but respects parent boundaries
+  min-height: 0;
+  padding: 4px;
+
+  overflow-y: auto;
+  flex-grow: 1;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+  }
 }
 
+// 4. Card Styling
 mat-card {
   border-radius: 8px;
   border: 1px solid rgba(223, 225, 230, 0.5);
-  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.05); 
+  box-shadow: 0 1px 2px rgba(9, 30, 66, 0.05);
   background: white;
   cursor: grab;
-  
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  position: relative;
+  transition: box-shadow 0.2s ease;
 
   &:hover {
     box-shadow: 0 4px 8px rgba(9, 30, 66, 0.1);
-    border-color: #B3D4FF; // Subtle highlight on hover
-
-    .delete-btn {
-      opacity: 1; 
-    }
+    border-color: #b3d4ff;
   }
 
   &:active {
@@ -62,7 +111,16 @@ mat-card {
   }
 
   mat-card-header {
-    padding: 16px 16px 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 12px 0 16px;
+  }
+
+  .header-text {
+    flex: 1;
+    overflow: hidden;
+    margin-right: 8px;
   }
 
   mat-card-title {
@@ -70,62 +128,41 @@ mat-card {
     font-weight: 600;
     color: #172b4d;
     line-height: 1.4;
+    margin-bottom: 4px;
   }
 
   mat-card-subtitle {
     font-size: 0.85rem;
     margin-top: 4px;
-    color: #5E6C84;
+    color: #5e6c84;
+  }
+
+  .menu-btn {
+    margin-top: -8px;
+    margin-right: -8px;
+    color: #6b778c;
+    cursor: pointer;
   }
 
   mat-card-content {
     padding: 0 16px 16px 16px;
     p {
       font-size: 0.8rem;
-      color: #6B778C;
+      color: #6b778c;
       font-weight: 500;
-    }
-  }
-
-  mat-card-actions {
-    padding: 8px 16px 12px 16px;
-    border-top: none; // Cleaner look without the line
-    display: flex;
-    justify-content: flex-end;
-    
-    // Make the button small and subtle until hovered
-    button {
-      font-size: 0.8rem;
-      padding: 0 12px;
-      height: 32px;
-      line-height: 32px;
+      margin: 0;
     }
   }
 }
 
-.clickable-card {
-  cursor: pointer;
-  position: relative; // For positioning the delete button if needed
-}
-
-.delete-btn {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  transform: scale(0.8);
-  opacity: 0; // Hide by default
-  transition: opacity 0.2s;
-}
-
-// --- Drag & Drop Visuals ---
-
+// 5. Drag & Drop Visuals
 .cdk-drag-preview {
-  transition: none;
   box-sizing: border-box;
   border-radius: 8px;
-  box-shadow: 0 10px 20px rgba(9, 30, 66, 0.25); // Deep shadow when lifting
+  box-shadow: 0 10px 20px rgba(9, 30, 66, 0.25);
   background-color: white;
   cursor: grabbing;
+  transition: none;
 }
 
 .cdk-drag-placeholder {
@@ -141,7 +178,7 @@ mat-card {
   align-items: center;
   justify-content: center;
   height: 100px;
-  color: #6B778C;
+  color: #6b778c;
   border: 2px dashed rgba(9, 30, 66, 0.08);
   border-radius: 8px;
   font-size: 0.85rem;
