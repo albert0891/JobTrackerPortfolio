@@ -25,6 +25,9 @@ export class JobService {
   // Components will track this signal to update the UI automatically.
   public readonly jobs = this.jobsSignal.asReadonly();
 
+  // Global search state
+  public searchQuery = signal<string>('');
+
   constructor() {}
 
   /**

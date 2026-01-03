@@ -1,7 +1,6 @@
 <div class="kanban-board">
   <div class="board-container">
-    <ng-container
-      *ngTemplateOutlet="
+    <ng-container *ngTemplateOutlet="
         columnTemplate;
         context: {
           $implicit: appliedJobs(),
@@ -9,11 +8,9 @@
           status: statuses.APPLIED,
           statusClass: 'status-applied'
         }
-      "
-    ></ng-container>
+      "></ng-container>
 
-    <ng-container
-      *ngTemplateOutlet="
+    <ng-container *ngTemplateOutlet="
         columnTemplate;
         context: {
           $implicit: interviewingJobs(),
@@ -21,11 +18,9 @@
           status: statuses.INTERVIEWING,
           statusClass: 'status-interviewing'
         }
-      "
-    ></ng-container>
+      "></ng-container>
 
-    <ng-container
-      *ngTemplateOutlet="
+    <ng-container *ngTemplateOutlet="
         columnTemplate;
         context: {
           $implicit: offerJobs(),
@@ -33,11 +28,9 @@
           status: statuses.OFFER,
           statusClass: 'status-offer'
         }
-      "
-    ></ng-container>
+      "></ng-container>
 
-    <ng-container
-      *ngTemplateOutlet="
+    <ng-container *ngTemplateOutlet="
         columnTemplate;
         context: {
           $implicit: rejectedJobs(),
@@ -45,52 +38,51 @@
           status: statuses.REJECTED,
           statusClass: 'status-rejected'
         }
-      "
-    ></ng-container>
+      "></ng-container>
   </div>
 </div>
 
-<ng-template
-  #columnTemplate
-  let-jobs
-  let-title="title"
-  let-status="status"
-  let-statusClass="statusClass"
->
+<ng-template #columnTemplate let-jobs let-title="title" let-status="status" let-statusClass="statusClass">
   <div class="column" [class]="statusClass">
     <h2>{{ title }} ({{ jobs.length }})</h2>
 
-    <div
-      cdkDropList
-      [cdkDropListData]="jobs"
-      class="job-list"
-      [id]="getStatusListId(status)"
-      [cdkDropListConnectedTo]="columnIds"
-      (cdkDropListDropped)="drop($event)"
-    >
+    <div cdkDropList [cdkDropListData]="jobs" class="job-list" [id]="getStatusListId(status)"
+      [cdkDropListConnectedTo]="columnIds" (cdkDropListDropped)="drop($event)">
       @for (job of jobs; track job.id) {
-      <mat-card cdkDrag (click)="editJob(job)" class="clickable-card">
+      <mat-card cdkDrag>
         <mat-card-header>
-          <mat-card-title>{{ job.jobTitle }}</mat-card-title>
-          <mat-card-subtitle>{{ job.companyName }}</mat-card-subtitle>
-          <button
-            mat-icon-button
-            color="warn"
-            class="delete-btn"
-            (click)="$event.stopPropagation(); deleteJob(job.id!)"
-          >
-            <mat-icon>close</mat-icon>
+          <div class="header-text">
+            <mat-card-title>{{ job.jobTitle }}</mat-card-title>
+            <mat-card-subtitle>{{ job.companyName }}</mat-card-subtitle>
+          </div>
+
+          <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-btn" (mousedown)="$event.stopPropagation()"
+            (click)="$event.stopPropagation()">
+            <mat-icon>more_horiz</mat-icon>
           </button>
+
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="editJob(job)">
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+
+            <button mat-menu-item (click)="openAnalysis(job.id)">
+              <mat-icon>analytics</mat-icon>
+              <span>Analyze AI</span>
+            </button>
+
+            <button mat-menu-item (click)="deleteJob(job.id!)">
+              <mat-icon color="warn">delete</mat-icon>
+              <span style="color: var(--mat-warn-color)">Delete</span>
+            </button>
+          </mat-menu>
         </mat-card-header>
+
         <mat-card-content>
           <p>Applied: {{ job.dateApplied | date : 'mediumDate' }}</p>
         </mat-card-content>
 
-        <mat-card-actions align="end">
-          <button mat-stroked-button color="primary" (click)="openAnalysis(job.id)">
-            <mat-icon>psychology</mat-icon> Analyze
-          </button>
-        </mat-card-actions>
       </mat-card>
       } @if (jobs.length === 0) {
       <div class="placeholder">Drop applications here</div>

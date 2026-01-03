@@ -1,7 +1,15 @@
 <mat-toolbar class="app-toolbar">
   <mat-icon class="logo-icon">sensors</mat-icon>
   <span class="brand-name">{{ title }}</span>
+
+  <div class="search-container">
+    <mat-icon class="search-icon">search</mat-icon>
+    <input type="text" placeholder="Search jobs..." [ngModel]="jobService.searchQuery()"
+      (ngModelChange)="jobService.searchQuery.set($event)" class="search-input">
+  </div>
+
   <span class="spacer"></span>
+
   <button mat-flat-button color="primary" class="add-btn" (click)="openAddJobDialog()">
     <mat-icon>add</mat-icon> New Job
   </button>

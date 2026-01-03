@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 
 import { JobApplication } from '../../models/job-application.model';
 import { JobService } from '../../services/job.service';
@@ -26,6 +27,7 @@ import { JobDialogComponent } from '../job-dialog/job-dialog';
     MatCardModule, // For Material Cards
     MatButtonModule,
     MatIconModule, // Add this for the button icon
+    MatMenuModule, // Add this for the menu
   ],
   templateUrl: './kanban-board.html',
   styleUrls: ['./kanban-board.scss'],
@@ -49,18 +51,32 @@ export class KanbanBoardComponent implements OnInit {
     REJECTED: 'Rejected',
   };
 
-  // Computed Signals cache the result. They only recalculate when 'this.jobs()' changes.
-  // This solves the performance issue during drag-and-drop.
-  public appliedJobs = computed(() =>
-    this.jobs().filter((j) => j.status === this.statuses.APPLIED)
-  );
-  public interviewingJobs = computed(() =>
-    this.jobs().filter((j) => j.status === this.statuses.INTERVIEWING)
-  );
-  public offerJobs = computed(() => this.jobs().filter((j) => j.status === this.statuses.OFFER));
-  public rejectedJobs = computed(() =>
-    this.jobs().filter((j) => j.status === this.statuses.REJECTED)
-  );
+  // Access the search query
+  public searchQuery = this.jobService.searchQuery;
+
+  // Filter logic now includes text search
+  public appliedJobs = computed(() => this.filterJobs(this.statuses.APPLIED));
+  public interviewingJobs = computed(() => this.filterJobs(this.statuses.INTERVIEWING));
+  public offerJobs = computed(() => this.filterJobs(this.statuses.OFFER));
+  public rejectedJobs = computed(() => this.filterJobs(this.statuses.REJECTED));
+
+  // Centralized filter function
+  private filterJobs(status: string): JobApplication[] {
+    const query = this.searchQuery().toLowerCase().trim();
+
+    return this.jobs().filter((job) => {
+      // 1. Filter by Status
+      const matchesStatus = job.status === status;
+
+      // 2. Filter by Search Query (Title or Company)
+      const matchesQuery =
+        !query ||
+        job.jobTitle.toLowerCase().includes(query) ||
+        job.companyName.toLowerCase().includes(query);
+
+      return matchesStatus && matchesQuery;
+    });
+  }
 
   ngOnInit(): void {
     this.jobService.getAllJobs();
