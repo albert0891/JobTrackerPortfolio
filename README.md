@@ -3,8 +3,8 @@
 **OfferMagnet** is an intelligent, full-stack job application tracker designed to streamline the job hunt process. It combines a visual Kanban board with Generative AI to help developers organize applications, analyze job descriptions, and optimize their interview preparation.
 
 <div align="center">
-  <img src="docs/dashboard-preview.png" alt="Dashboard Screenshot" width="60%" />
-  <img src="docs/ai-analysis-result-preview.png" alt="AI Analysis Result Screenshot" width="30%" />
+  <img src="docs/dashboard-preview.png" alt="Dashboard Screenshot" width="75%" />
+  <img src="docs/ai-analysis-result-preview.png" alt="AI Analysis Result Screenshot" width="25%" />
 </div>
 
 ## 🚀 Features
