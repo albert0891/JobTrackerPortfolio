@@ -1,18 +1,48 @@
-<h2 mat-dialog-title>AI Analysis: {{ data.jobTitle }}</h2>
+<h2 mat-dialog-title>
+  AI Analysis: {{ data.jobTitle }}
+</h2>
 
-<mat-dialog-content>
+<mat-dialog-content class="dialog-content">
+
+  @if (!isLoading() && !analysisData() && !errorMessage()) {
+  <div class="upload-section">
+    <div class="icon-circle">
+      <mat-icon class="upload-icon">cloud_upload</mat-icon>
+    </div>
+    <h3>Upload Resume</h3>
+    <p>Select your PDF resume to start the AI analysis.</p>
+
+    <input type="file" #fileInput (change)="onFileSelected($event)" accept=".pdf" style="display: none;">
+
+    <button mat-flat-button color="primary" (click)="fileInput.click()">
+      Choose PDF File
+    </button>
+  </div>
+  }
+
   @if (isLoading()) {
   <div class="loading-container">
-    <p>Consulting Gemini AI...</p>
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    <div class="loading-text">
+      <mat-icon class="spin">sync</mat-icon>
+      <p>Consulting Gemini AI...</p>
+    </div>
+    <p class="sub-text">Reading your resume and analyzing match score...</p>
+
+    <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
   </div>
-  } @if (errorMessage()) {
+  }
+
+  @if (errorMessage()) {
   <div class="error-container">
-    <mat-icon color="warn">error</mat-icon>
+    <mat-icon color="warn">error_outline</mat-icon>
     <p>{{ errorMessage() }}</p>
+    <button mat-button color="primary" (click)="errorMessage.set(null)">Try Again</button>
   </div>
-  } @if (analysisData(); as result) {
+  }
+
+  @if (analysisData(); as result) {
   <div class="result-container">
+
     <div class="score-section">
       <div class="score-circle" [ngClass]="getScoreColor(result.matchScore)">
         <span class="score-value">{{ result.matchScore }}</span>
@@ -21,12 +51,12 @@
     </div>
 
     <div class="section">
-      <h3>💪 Strengths</h3>
+      <h3><mat-icon>thumb_up</mat-icon> Strengths</h3>
       <p>{{ result.strengths }}</p>
     </div>
 
     <div class="section">
-      <h3>🔑 Missing Keywords</h3>
+      <h3><mat-icon>vpn_key</mat-icon> Missing Keywords</h3>
       <p class="hint">Consider adding these to your resume:</p>
       <mat-chip-set>
         @for (keyword of result.keywordsToIntegrate; track keyword) {
@@ -34,8 +64,10 @@
         }
       </mat-chip-set>
     </div>
+
   </div>
   }
+
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">

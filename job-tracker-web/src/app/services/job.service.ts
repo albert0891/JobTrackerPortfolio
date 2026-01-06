@@ -120,11 +120,16 @@ export class JobService {
   }
 
   /**
-   * Calls the AI endpoint to analyze the job.
-   * HTTP POST: /api/Ai/analyze/{jobId}
+   * Calls the AI endpoint with a resume file.
+   * HTTP POST (Multipart): /api/Ai/analyze/{jobId}
    */
-  analyzeJob(jobId: number) {
+  analyzeJob(jobId: number, resumeFile: File) {
     const url = `${environment.apiUrl}/Ai/analyze/${jobId}`;
-    return this.http.post<AiAnalysisResult>(url, {});
+
+    const formData = new FormData();
+    formData.append('resume', resumeFile);
+
+    // Angular HTTP client handles the Content-Type header for FormData automatically
+    return this.http.post<AiAnalysisResult>(url, formData);
   }
 }

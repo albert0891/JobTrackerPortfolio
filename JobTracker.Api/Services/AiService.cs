@@ -1,6 +1,8 @@
+using System.Text;
 using System.Text.Json;
 using JobTracker.Api.Data;
 using Mscc.GenerativeAI;
+using UglyToad.PdfPig;
 
 namespace JobTracker.Api.Services
 {
@@ -35,21 +37,20 @@ namespace JobTracker.Api.Services
             _model = _googleAI.GenerativeModel("gemini-2.5-flash");
         }
 
-        public async Task<AiAnalysisDto?> AnalyzeJobAsync(int jobId)
+        public async Task<AiAnalysisDto?> AnalyzeJobAsync(int jobId, Stream resumeStream)
         {
             var jobApplication = await _context.JobApplications.FindAsync(jobId);
             if (jobApplication == null) return null;
 
-            // --- Hardcoded for MVP ---
-            // Meaning: We are faking the resume upload feature for now 
-            // by using a static string so we can test the AI logic immediately.
-            string myResume = @"
-                Albert, Full-Stack Engineer.
-                Skills: Angular, .NET Web API, C#, TypeScript, Docker, SQL Server.
-                Experience: Built a Kanban board application with drag-and-drop features.
-            ";
-            // -------------------------
+            // 1. Extract text from the PDF stream using PdfPig
+            string resumeText = ExtractTextFromPdf(resumeStream);
 
+            if (string.IsNullOrWhiteSpace(resumeText))
+            {
+                throw new Exception("Could not read text from the uploaded PDF.");
+            }
+
+            // 2. Construct Prompt (Use the extracted text)
             string prompt = $@"
                 You are an expert career coach. Analyze the following resume against the job description.
                 Respond ONLY with a valid JSON object.
@@ -61,18 +62,20 @@ namespace JobTracker.Api.Services
                     ""keywordsToIntegrate"": [""string"", ""string""]
                 }}
 
-                RESUME: {myResume}
-                JOB DESCRIPTION: {jobApplication.JobDescription}
+                --- RESUME START ---
+                {resumeText}
+                --- RESUME END ---
+
+                --- JOB DESCRIPTION START ---
+                {jobApplication.JobDescription}
+                --- JOB DESCRIPTION END ---
             ";
 
             try
             {
                 var response = await _model.GenerateContent(prompt);
-
-                // Usually the text is in response.Text
                 string responseText = response.Text;
 
-                // Cleanup markdown if Gemini puts ```json ... ```
                 if (responseText.StartsWith("```"))
                 {
                     responseText = responseText.Replace("```json", "").Replace("```", "").Trim();
@@ -83,7 +86,7 @@ namespace JobTracker.Api.Services
                     PropertyNameCaseInsensitive = true
                 });
 
-                // Update DB
+                // Update DB with result
                 jobApplication.AiAnalysisResult = responseText;
                 await _context.SaveChangesAsync();
 
@@ -92,8 +95,28 @@ namespace JobTracker.Api.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Gemini Error: {ex.Message}");
-                // In production, use ILogger to log this
                 return null;
+            }
+        }
+
+        // Helper method to parse PDF
+        private string ExtractTextFromPdf(Stream pdfStream)
+        {
+            try
+            {
+                using var document = PdfDocument.Open(pdfStream);
+                var sb = new StringBuilder();
+                foreach (var page in document.GetPages())
+                {
+                    sb.Append(page.Text);
+                    sb.Append(" ");
+                }
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PDF Parsing Error: {ex.Message}");
+                return string.Empty;
             }
         }
     }

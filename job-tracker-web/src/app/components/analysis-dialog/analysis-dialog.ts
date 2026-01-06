@@ -23,11 +23,11 @@ import { AiAnalysisResult } from '../../models/job-application.model';
   templateUrl: './analysis-dialog.html',
   styleUrls: ['./analysis-dialog.scss'],
 })
-export class AnalysisDialogComponent implements OnInit {
+export class AnalysisDialogComponent {
   private jobService = inject(JobService);
 
   // Signals to manage UI state
-  public isLoading = signal<boolean>(true);
+  public isLoading = signal<boolean>(false);
   public analysisData = signal<AiAnalysisResult | null>(null);
   public errorMessage = signal<string | null>(null);
 
@@ -36,22 +36,27 @@ export class AnalysisDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { jobId: number; jobTitle: string }
   ) {}
 
-  ngOnInit(): void {
-    this.startAnalysis();
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.startAnalysis(file);
+    }
   }
 
-  startAnalysis() {
+  startAnalysis(file: File) {
     this.isLoading.set(true);
     this.errorMessage.set(null);
+    this.analysisData.set(null);
 
-    this.jobService.analyzeJob(this.data.jobId).subscribe({
+    // Pass the file to the service
+    this.jobService.analyzeJob(this.data.jobId, file).subscribe({
       next: (result) => {
         this.analysisData.set(result);
         this.isLoading.set(false);
       },
       error: (err) => {
         console.error('AI Analysis Failed:', err);
-        this.errorMessage.set('Failed to analyze job. Please try again later.');
+        this.errorMessage.set('Analysis failed. Please try again.');
         this.isLoading.set(false);
       },
     });
@@ -61,10 +66,9 @@ export class AnalysisDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  // Helper to determine score color
   getScoreColor(score: number): string {
-    if (score >= 80) return 'primary'; // Green-ish usually
-    if (score >= 50) return 'accent'; // Yellow/Orange
-    return 'warn'; // Red
+    if (score >= 80) return 'primary';
+    if (score >= 50) return 'accent';
+    return 'warn';
   }
 }

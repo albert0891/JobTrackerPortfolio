@@ -1,5 +1,6 @@
 using JobTracker.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace JobTracker.Api.Controllers
 {
@@ -16,15 +17,23 @@ namespace JobTracker.Api.Controllers
 
         // POST: api/Ai/analyze/5
         [HttpPost("analyze/{jobId}")]
-        public async Task<IActionResult> AnalyzeJob(int jobId)
+        public async Task<IActionResult> AnalyzeJob(int jobId, [FromForm] IFormFile resume)
         {
-            try 
+            if (resume == null || resume.Length == 0)
             {
-                var analysis = await _aiService.AnalyzeJobAsync(jobId);
+                return BadRequest("Please upload a resume PDF.");
+            }
+
+            try
+            {
+                // Open the read stream directly from the uploaded file
+                using var stream = resume.OpenReadStream();
+
+                var analysis = await _aiService.AnalyzeJobAsync(jobId, stream);
 
                 if (analysis == null)
                 {
-                    return NotFound($"Job {jobId} not found or analysis failed.");
+                    return NotFound($"Analysis failed.");
                 }
 
                 return Ok(analysis);
