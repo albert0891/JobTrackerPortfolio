@@ -1,11 +1,13 @@
 using JobTracker.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace JobTracker.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [EnableRateLimiting("GeminiPolicy")]
     public class AiController : ControllerBase
     {
         private readonly AiService _aiService;
@@ -17,7 +19,7 @@ namespace JobTracker.Api.Controllers
 
         // POST: api/Ai/analyze/5
         [HttpPost("analyze/{jobId}")]
-        public async Task<IActionResult> AnalyzeJob(int jobId, [FromForm] IFormFile resume)
+        public async Task<IActionResult> AnalyzeJob(int jobId, IFormFile resume)
         {
             if (resume == null || resume.Length == 0)
             {
