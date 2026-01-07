@@ -1,25 +1,26 @@
-// Import all necessary namespaces
 using JobTracker.Api.Data;
 using JobTracker.Api.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models; // Import this for full Swagger configuration
+using Microsoft.OpenApi.Models;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // --- Dependency Injection (DI) Container ---
 
-// 1. Register Controllers
+// Register Controllers
 // This tells the app to find and use our Controller classes (like JobApplicationsController).
 builder.Services.AddControllers();
 
-// 2. Register Database Context
+// Register Database Context
 // This registers our ApplicationDbContext and configures it to use PostgreSQL
 // with the connection string from appsettings.json.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-// 3. Register CORS Policy
+// Register CORS Policy
 // This defines a security policy to allow our Angular app (at localhost:4200)
 // to send requests to this API.
 var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -34,8 +35,9 @@ builder.Services.AddCors(options =>
                       });
 });
 
-// 4. Register Swagger (OpenAPI) Services for CONTROLLERS
-// This replaces your 'AddOpenApi()'
+// Register Swagger (OpenAPI) Services for CONTROLLERS
+// This service provides the metadata (routes, parameters) needed for Swagger/OpenAPI generation.
+builder.Services.AddEndpointsApiExplorer();
 // 'AddSwaggerGen' is the correct service for finding Controller-based API endpoints.
 builder.Services.AddSwaggerGen(c =>
 {
@@ -43,11 +45,26 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobTracker.Api", Version = "v1" });
 });
 
-// 5. Register the concrete Service against its Interface for Dependency Injection
+// Register the concrete Service against its Interface for Dependency Injection
 builder.Services.AddScoped<IJobService, JobService>();
 
-// 6. Register the AiService for Dependency Injection
+// Register the AiService for Dependency Injection
 builder.Services.AddScoped<AiService>();
+
+// Add Rate Limiter Service
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    // Define a policy named "GeminiPolicy"
+    options.AddFixedWindowLimiter("GeminiPolicy", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1); // Time window: 1 minute
+        opt.PermitLimit = 5;                  // Permit limit: 5 requests
+        opt.QueueLimit = 0;                   // Queue limit: 0 (reject immediately if exceeded)
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+});
 
 // --- End of DI Container ---
 
@@ -57,7 +74,7 @@ var app = builder.Build();
 // This defines the 'middleware' that handles every HTTP request.
 // Order matters here!
 
-// 1. Configure for Development environments
+// Configure for Development environments
 if (app.Environment.IsDevelopment())
 {
     // This enables the interactive Swagger UI documentation page
@@ -71,21 +88,25 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// 2. Enable HTTPS Redirection
+// Enable HTTPS Redirection
 // This automatically redirects any HTTP request to its HTTPS equivalent.
 //app.UseHttpsRedirection();
 
-// 3. Enable CORS
+// Enable CORS
 // This applies the CORS policy we defined above, allowing our Angular app to connect.
 app.UseCors(myAllowSpecificOrigins);
 
-// 4. Enable Authorization (we'll use this later for security)
+// Enable Rate Limiting
+// Must be after UseCors so that 429 responses contain CORS headers.
+app.UseRateLimiter();
+
+// Enable Authorization (we'll use this later for security)
 app.UseAuthorization();
 
-// 5. Map Controllers
+// Map Controllers
 // This tells the app to map incoming requests to the routes defined
 // on our Controller classes (e.g., [Route("api/[controller]")])
 app.MapControllers();
 
-// 6. Run the application
+// Run the application
 app.Run();
