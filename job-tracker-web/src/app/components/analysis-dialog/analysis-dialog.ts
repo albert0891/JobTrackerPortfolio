@@ -56,7 +56,15 @@ export class AnalysisDialogComponent {
       },
       error: (err) => {
         console.error('AI Analysis Failed:', err);
-        this.errorMessage.set('Analysis failed. Please try again.');
+
+        if (err.status === 429) {
+          this.errorMessage.set(
+            '⏳ Rate limit exceeded. Please wait 1 minute before trying again.'
+          );
+        } else {
+          this.errorMessage.set('❌ Analysis failed. Please try again later.');
+        }
+
         this.isLoading.set(false);
       },
     });
