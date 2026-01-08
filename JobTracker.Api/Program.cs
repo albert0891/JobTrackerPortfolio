@@ -23,16 +23,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register CORS Policy
 // This defines a security policy to allow our Angular app (at localhost:4200)
 // to send requests to this API.
-var myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: myAllowSpecificOrigins,
-                      policy =>
-                      {
-                          policy.WithOrigins("http://localhost:4200")
-                                .AllowAnyHeader()
-                                .AllowAnyMethod();
-                      });
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
 });
 
 // Register Swagger (OpenAPI) Services for CONTROLLERS
@@ -94,7 +93,7 @@ if (app.Environment.IsDevelopment())
 
 // Enable CORS
 // This applies the CORS policy we defined above, allowing our Angular app to connect.
-app.UseCors(myAllowSpecificOrigins);
+app.UseCors("AllowAll");
 
 // Enable Rate Limiting
 // Must be after UseCors so that 429 responses contain CORS headers.
