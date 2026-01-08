@@ -73,19 +73,15 @@ var app = builder.Build();
 // This defines the 'middleware' that handles every HTTP request.
 // Order matters here!
 
-// Configure for Development environments
-if (app.Environment.IsDevelopment())
+// This enables the interactive Swagger UI documentation page
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    // This enables the interactive Swagger UI documentation page
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        // This tells the UI where to find the generated documentation file
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "JobTracker.Api v1");
-        // We set the route to the root for convenience
-        c.RoutePrefix = string.Empty;
-    });
-}
+    // This tells the UI where to find the generated documentation file
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "JobTracker.Api v1");
+    // We set the route to the root for convenience
+    c.RoutePrefix = string.Empty;
+});
 
 // Enable HTTPS Redirection
 // This automatically redirects any HTTP request to its HTTPS equivalent.
