@@ -27,6 +27,7 @@
 - **Signals**: Utilizes Angular Signals for fine-grained reactivity and state management.
 - **Lazy Loading**: Route-based lazy loading for optimal initial load performance.
 - **Robust Backend**: .NET 9 Web API using Entity Framework Core for data persistence.
+- **Rate Limiting**: Implements server-side rate limiting (Fixed Window: 5 requests/min) to manage AI API usage quotas.
 
 ---
 
