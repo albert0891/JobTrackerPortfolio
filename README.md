@@ -1,6 +1,6 @@
 # OfferMagnet 🧲
 
-**OfferMagnet** is an intelligent, full-stack job application tracker designed to streamline the job hunt process. It combines a visual Kanban board with Generative AI to help developers organize applications, analyze job descriptions, and optimize their interview preparation.
+**OfferMagnet** is a modern, AI-powered job application tracker designed to optimize the job hunting workflow. It combines a visual **Kanban** interface with **Generative AI** to analyze job descriptions against your resume, providing instant feedback and interview prep strategies.
 
 <div align="center">
   <img src="docs/dashboard-preview.png" alt="Dashboard Screenshot" width="70%" />
@@ -29,13 +29,19 @@
 - **Robust Backend**: .NET 9 Web API using Entity Framework Core for data persistence.
 - **Rate Limiting**: Implements server-side rate limiting (Fixed Window: 5 requests/min) to manage AI API usage quotas.
 
+### 4. Cloud-Native Architecture
+
+- **Database**: Serverless PostgreSQL via **Neon**.
+- **Backend**: Hosted on **Render** with auto-scaling.
+- **Frontend**: Deployed on **Vercel**.
+
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 
-- **Framework**: Angular 17+ (Standalone Components)
+- **Framework**: Angular 18+ (Standalone Components)
 - **Language**: TypeScript
 - **UI Library**: Angular Material
 - **State Management**: Angular Signals
@@ -49,9 +55,11 @@
 - **AI Integration**: Google Gemini API (`Mscc.GenerativeAI`)
 - **PDF Processing**: UglyToad.PdfPig
 
-### Database
+### Database & DevOps
 
-- **Primary**: PostgreSQL (via Docker)
+- **Production DB**: Neon (Serverless PostgreSQL)
+- **Local DB**: Dockerized PostgreSQL
+- **Deployment**: Render (Web Service)
 
 ---
 
@@ -106,6 +114,27 @@ ng serve
 ```
 
 _Open your browser and navigate to `http://localhost:4200`._
+
+---
+
+## 📦 Deployment & CI/CD
+
+This project is configured for seamless cloud deployment.
+
+### Database (Neon)
+
+The database is hosted on **Neon**. We use a hybrid migration strategy:
+
+- **Development**: Manually apply migrations or use `dotnet ef database update`.
+- **Production**: The API includes a runtime migration check in `Program.cs`. When Render deploys a new build, the app automatically executes `context.Database.Migrate()` to update the schema without downtime.
+
+### API (Render)
+
+- **Build Command**: `dotnet build`
+- **Start Command**: `dotnet run`
+- **Environment Variables**:
+  - `Gemini__ApiKey`: Set in Render Dashboard.
+  - `ConnectionStrings__DefaultConnection`: The Neon Pooled connection string.
 
 ---
 
