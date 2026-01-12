@@ -152,10 +152,10 @@ OfferMagnet/
 │
 └── JobTracker.Client/        # Angular Frontend
     ├── src/app/
-    │   ├── components/       # Standalone Components (Kanban, Dialogs)
-    │   ├── models/           # TypeScript Interfaces
-    │   ├── services/         # HTTP Services
-    │   └── app.routes.ts     # Lazy Loaded Routes
+        ├── components/       # Standalone Components (Kanban, Dialogs)
+        ├── models/           # TypeScript Interfaces
+        ├── services/         # HTTP Services
+        └── app.routes.ts     # Lazy Loaded Routes
 ```
 
 ## 🔐 Configuration
