@@ -151,7 +151,7 @@ OfferMagnet/
 │   └── Program.cs            # DI & Configuration
 │
 └── JobTracker.Client/        # Angular Frontend
-    ├── src/app/
+    └── src/app/
         ├── components/       # Standalone Components (Kanban, Dialogs)
         ├── models/           # TypeScript Interfaces
         ├── services/         # HTTP Services
