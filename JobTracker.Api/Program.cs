@@ -86,6 +86,25 @@ builder.Services.AddRateLimiter(options =>
 
 var app = builder.Build();
 
+// --- Auto-Migration ---
+// Automatically apply database migrations at startup.
+// This ensures the database schema is up-to-date, especially for new deployments (like Demo Mode).
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+        context.Database.Migrate();
+        // context.Database.EnsureCreated(); // Alternative if not using migrations, but Migrate is better for evolving schema
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while migrating the database.");
+    }
+}
+
 // --- HTTP Request Pipeline Configuration ---
 // This defines the 'middleware' that handles every HTTP request.
 // Order matters here!
