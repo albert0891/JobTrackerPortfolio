@@ -1,72 +1,191 @@
 <h2 mat-dialog-title>
-  AI Analysis: {{ data.jobTitle }}
+  AI Assistant: {{ data.jobTitle }}
 </h2>
 
 <mat-dialog-content class="dialog-content">
 
-  @if (!isLoading() && !analysisData() && !errorMessage()) {
-  <div class="upload-section">
-    <div class="icon-circle">
-      <mat-icon class="upload-icon">cloud_upload</mat-icon>
-    </div>
-    <h3>Upload Resume</h3>
-    <p>Select your PDF resume to start the AI analysis.</p>
+  <mat-tab-group dynamicHeight>
 
-    <input type="file" #fileInput (change)="onFileSelected($event)" accept=".pdf" style="display: none;">
+    <!-- TAB 1: Analysis -->
+    <mat-tab label="Analysis">
+      <div class="tab-content">
+        @if (!analysisStatus() && !analysisData() && !errorMessage()) {
+        <div class="upload-section">
+          <div class="icon-circle">
+            <mat-icon class="upload-icon">cloud_upload</mat-icon>
+          </div>
+          <h3>Upload Resume</h3>
+          <p>Select your PDF resume to start the AI matching.</p>
 
-    <button mat-flat-button color="primary" (click)="fileInput.click()">
-      Choose PDF File
-    </button>
-  </div>
-  }
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept=".pdf" style="display: none;">
 
-  @if (isLoading()) {
-  <div class="loading-container">
-    <div class="loading-text">
-      <mat-icon class="spin">sync</mat-icon>
-      <p>Consulting Gemini AI...</p>
-    </div>
-    <p class="sub-text">Reading your resume and analyzing match score...</p>
-
-    <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
-  </div>
-  }
-
-  @if (errorMessage()) {
-  <div class="error-container">
-    <mat-icon color="warn">error_outline</mat-icon>
-    <p>{{ errorMessage() }}</p>
-    <button mat-button color="primary" (click)="errorMessage.set(null)">Try Again</button>
-  </div>
-  }
-
-  @if (analysisData(); as result) {
-  <div class="result-container">
-
-    <div class="score-section">
-      <div class="score-circle" [ngClass]="getScoreColor(result.matchScore)">
-        <span class="score-value">{{ result.matchScore }}</span>
-        <span class="score-label">Match</span>
-      </div>
-    </div>
-
-    <div class="section">
-      <h3><mat-icon>thumb_up</mat-icon> Strengths</h3>
-      <p>{{ result.strengths }}</p>
-    </div>
-
-    <div class="section">
-      <h3><mat-icon>vpn_key</mat-icon> Missing Keywords</h3>
-      <p class="hint">Consider adding these to your resume:</p>
-      <mat-chip-set>
-        @for (keyword of result.keywordsToIntegrate; track keyword) {
-        <mat-chip>{{ keyword }}</mat-chip>
+          <button mat-flat-button color="primary" (click)="fileInput.click()">
+            Choose PDF File
+          </button>
+        </div>
         }
-      </mat-chip-set>
-    </div>
 
-  </div>
-  }
+        @if ((analysisStatus() === 'Queued' || analysisStatus() === 'Processing') && (!activeOperation() ||
+        activeOperation() === 'Analyze')) {
+        <div class="loading-container">
+          <div class="loading-text">
+            <mat-icon class="spin">sync</mat-icon>
+            <p>Thinking...</p>
+          </div>
+          <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
+          <p class="hint-text">You can close this; I'll notify you when ready.</p>
+        </div>
+        }
+
+        @if (errorMessage() || analysisStatus() === 'Failed') {
+        <div class="error-container">
+          <mat-icon color="warn">error_outline</mat-icon>
+          <p>{{ errorMessage() || 'Analysis Failed' }}</p>
+          <button mat-button color="primary" (click)="errorMessage.set(null)">Try Again</button>
+        </div>
+        }
+
+        @if (analysisData(); as result) {
+        <div class="result-container">
+          <div class="editor-toolbar">
+            <span class="toolbar-title">Analysis Result</span>
+            <!-- Hidden file input for re-upload -->
+            <input type="file" #reUploadInput (change)="onFileSelected($event)" accept=".pdf" style="display: none;">
+
+            <button mat-stroked-button color="primary" (click)="reUploadInput.click()"
+              [disabled]="analysisStatus() === 'Processing'">
+              <mat-icon>upload</mat-icon> Upload New
+            </button>
+          </div>
+
+          <div class="score-section">
+            <div class="score-circle" [ngClass]="getScoreColor(result.matchScore)">
+              <span class="score-value">{{ result.matchScore }}</span>
+              <span class="score-label">Match</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <h3><mat-icon>thumb_up</mat-icon> Strengths</h3>
+            <p>{{ result.strengths }}</p>
+          </div>
+
+          <div class="section">
+            <h3><mat-icon>vpn_key</mat-icon> Missing Keywords</h3>
+            <mat-chip-set>
+              @for (keyword of result.keywordsToIntegrate; track keyword) {
+              <mat-chip>{{ keyword }}</mat-chip>
+              }
+            </mat-chip-set>
+          </div>
+        </div>
+        }
+      </div>
+    </mat-tab>
+
+    <!-- TAB 2: Tailored Resume -->
+    <mat-tab label="Tailored Resume">
+      <div class="tab-content">
+        @if (!resumeText() && !generatedResume() && !analysisData()) {
+        <div class="empty-state">
+          <mat-icon>description</mat-icon>
+          <p>Upload your resume in the Analysis tab first.</p>
+        </div>
+        } @else {
+        <!-- Determine if we have a generated resume -->
+        @if (generatedResume()) {
+        <div class="editor-container">
+          <div class="editor-toolbar">
+            <span class="toolbar-title">Tailored Resume (Markdown)</span>
+
+            @if ((analysisStatus() === 'Queued' || analysisStatus() === 'Processing') && activeOperation() === 'Resume')
+            {
+            <div class="regenerating-indicator">
+              <mat-progress-bar mode="indeterminate" diameter="20"></mat-progress-bar>
+              <span>Regenerating...</span>
+            </div>
+            } @else {
+            <button mat-stroked-button color="primary" (click)="generateResume()"
+              [disabled]="analysisStatus() === 'Processing'">
+              <mat-icon>refresh</mat-icon> Regenerate
+            </button>
+            }
+          </div>
+          <mat-form-field appearance="outline" class="full-width no-label">
+            <textarea matInput [ngModel]="generatedResume()" rows="15" readonly></textarea>
+          </mat-form-field>
+        </div>
+        } @else {
+        <div class="action-state">
+          <mat-icon class="large-icon">auto_fix_high</mat-icon>
+          <h3>Tailor Resume</h3>
+          <p>Generate a version of your resume optimized for this Job Description.</p>
+
+          @if (analysisStatus() === 'Queued' || analysisStatus() === 'Processing') {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          <p>Generating...</p>
+          } @else {
+          <button mat-flat-button color="primary" (click)="generateResume()">
+            Generate Custom Resume
+          </button>
+          }
+        </div>
+        }
+        }
+      </div>
+    </mat-tab>
+
+    <!-- TAB 3: Cover Letter -->
+    <mat-tab label="Cover Letter">
+      <div class="tab-content">
+        @if (!resumeText() && !generatedCoverLetter() && !analysisData()) {
+        <div class="empty-state">
+          <mat-icon>email</mat-icon>
+          <p>Upload your resume in the Analysis tab first.</p>
+        </div>
+        } @else {
+        @if (generatedCoverLetter()) {
+        <div class="editor-container">
+          <div class="editor-toolbar">
+            <span class="toolbar-title">Cover Letter (Markdown)</span>
+
+            @if ((analysisStatus() === 'Queued' || analysisStatus() === 'Processing') && activeOperation() ===
+            'CoverLetter') {
+            <div class="regenerating-indicator">
+              <mat-progress-bar mode="indeterminate" diameter="20"></mat-progress-bar>
+              <span>Regenerating...</span>
+            </div>
+            } @else {
+            <button mat-stroked-button color="primary" (click)="generateCoverLetter()"
+              [disabled]="analysisStatus() === 'Processing'">
+              <mat-icon>refresh</mat-icon> Regenerate
+            </button>
+            }
+          </div>
+          <mat-form-field appearance="outline" class="full-width no-label">
+            <textarea matInput [ngModel]="generatedCoverLetter()" rows="15" readonly></textarea>
+          </mat-form-field>
+        </div>
+        } @else {
+        <div class="action-state">
+          <mat-icon class="large-icon">mail_outline</mat-icon>
+          <h3>Draft Cover Letter</h3>
+          <p>Write a compelling cover letter based on your experience and this role.</p>
+          @if (analysisStatus() === 'Queued' || analysisStatus() === 'Processing') {
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          <p>Writing...</p>
+          } @else {
+          <button mat-flat-button color="primary" (click)="generateCoverLetter()">
+            Draft Cover Letter
+          </button>
+          }
+        </div>
+        }
+        }
+      </div>
+    </mat-tab>
+
+  </mat-tab-group>
 
 </mat-dialog-content>
 

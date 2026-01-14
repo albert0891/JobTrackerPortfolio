@@ -12,6 +12,13 @@ export interface JobApplication {
   // even if we aren't using the AI logic yet.
   aiAnalysisResult?: string;
   generatedCoverLetter?: string;
+  generatedResume?: string;
+  resumeText?: string;
+
+  // Transient field for UI state (Queued, Processing, Done, Failed)
+  analysisStatus?: string;
+  // Transient: 'Analyze', 'Resume', 'CoverLetter'
+  activeOperation?: string;
 }
 
 export interface AiAnalysisResult {

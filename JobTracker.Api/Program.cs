@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.Channels;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,34 +21,42 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+// Register SignalR
+builder.Services.AddSignalR();
+
+// Register Channel for Background Queue (Unbounded for simplicity, can use Bounded for backpressure)
+builder.Services.AddSingleton(Channel.CreateUnbounded<AnalysisRequest>());
+
+// Register Background Service
+builder.Services.AddHostedService<BackgroundAnalysisService>();
+
 // Register CORS Policy
-// This defines a security policy to allow our Angular app (at localhost:4200)
-// to send requests to this API.
+// SignalR requires AllowCredentials() and specific origins (cannot use AllowAnyOrigin with Credentials)
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
         policy =>
         {
-            policy.AllowAnyOrigin()
+            policy.WithOrigins(allowedOrigins) // Read from appsettings.json
                   .AllowAnyMethod()
-                  .AllowAnyHeader();
+                  .AllowAnyHeader()
+                  .AllowCredentials(); // Required for SignalR
         });
 });
 
 // Register Swagger (OpenAPI) Services for CONTROLLERS
 // This service provides the metadata (routes, parameters) needed for Swagger/OpenAPI generation.
 builder.Services.AddEndpointsApiExplorer();
-// 'AddSwaggerGen' is the correct service for finding Controller-based API endpoints.
 builder.Services.AddSwaggerGen(c =>
 {
     // This provides standard information for the Swagger UI page
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobTracker.Api", Version = "v1" });
 });
 
-// Register the concrete Service against its Interface for Dependency Injection
+// Register Services
 builder.Services.AddScoped<IJobService, JobService>();
-
-// Register the AiService for Dependency Injection
 builder.Services.AddScoped<AiService>();
 
 // Add Rate Limiter Service
@@ -102,6 +111,10 @@ app.UseAuthorization();
 // This tells the app to map incoming requests to the routes defined
 // on our Controller classes (e.g., [Route("api/[controller]")])
 app.MapControllers();
+
+
+// Map SignalR Hub
+app.MapHub<AnalysisHub>("/analysisHub");
 
 // Run the application
 app.Run();

@@ -53,7 +53,23 @@
         <mat-card-header>
           <div class="header-text">
             <mat-card-title>{{ job.jobTitle }}</mat-card-title>
-            <mat-card-subtitle>{{ job.companyName }}</mat-card-subtitle>
+            <mat-card-subtitle>
+              {{ job.companyName }}
+
+              <!-- Analysis Status Indicator -->
+              @if(job.analysisStatus) {
+              <span class="analysis-status" [title]="job.analysisStatus">
+                @if(job.analysisStatus === 'Queued') { <mat-icon
+                  class="status-icon queued inline-icon">hourglass_empty</mat-icon> }
+                @if(job.analysisStatus === 'Processing') { <mat-icon
+                  class="status-icon processing inline-icon">sync</mat-icon> }
+                @if(job.analysisStatus === 'Done') { <mat-icon
+                  class="status-icon done inline-icon">check_circle</mat-icon> }
+                @if(job.analysisStatus === 'Failed') { <mat-icon class="status-icon failed inline-icon">error</mat-icon>
+                }
+              </span>
+              }
+            </mat-card-subtitle>
           </div>
 
           <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-btn" (mousedown)="$event.stopPropagation()"

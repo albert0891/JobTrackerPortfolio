@@ -23,5 +23,8 @@ namespace JobTracker.Api.Models
         // because they won't have data until the AI runs.
         public string? AiAnalysisResult { get; set; }
         public string? GeneratedCoverLetter { get; set; }
+
+        public string? ResumeText { get; set; }
+        public string? GeneratedResume { get; set; }
     }
 }

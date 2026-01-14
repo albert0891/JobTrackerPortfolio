@@ -184,3 +184,46 @@ mat-card {
   font-size: 0.85rem;
   background-color: transparent;
 }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes simple-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.analysis-status {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  vertical-align: middle;
+
+  .inline-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+  }
+
+  .queued {
+    color: #ffd740; // Amber accent
+    animation: simple-pulse 2s infinite;
+  }
+
+  .processing {
+    color: #448aff; // Blue accent
+    animation: spin 2s linear infinite;
+  }
+
+  .done {
+    color: #69f0ae; // Green accent
+  }
+
+  .failed {
+    color: #ff5252; // Red warn
+  }
+}

@@ -1,44 +1,105 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { JobApplication } from '../models/job-application.model';
 import { environment } from '../../environments/environment';
 import { tap } from 'rxjs';
 import { AiAnalysisResult } from '../models/job-application.model';
+import { SignalRService } from './signalr.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class JobService {
-  // Use 'inject' for Dependency Injection (modern Angular style)
   private http = inject(HttpClient);
+  private signalRService = inject(SignalRService); // Inject SignalR Service
 
-  // Get the base API URL from the environment config
   private apiUrl = `${environment.apiUrl}/JobApplications`;
 
-  // --- STATE MANAGEMENT (SIGNALS) ---
-
-  // Writable Signal: Holds the current list of job applications.
-  // We make it private so components cannot modify it directly.
   private jobsSignal = signal<JobApplication[]>([]);
-
-  // Read-only Signal: Exposed to components.
-  // Components will track this signal to update the UI automatically.
   public readonly jobs = this.jobsSignal.asReadonly();
-
-  // Global search state
   public searchQuery = signal<string>('');
 
-  constructor() {}
+  constructor() {
+    // React to Status Updates from SignalR
+    effect(() => {
+      const updates = this.signalRService.jobStatusUpdates();
+      if (updates.size === 0) return;
 
-  /**
-   * Fetches all jobs from the backend and updates the signal.
-   * HTTP GET: /api/JobApplications
-   */
+      this.jobsSignal.update(jobs => 
+        jobs.map(job => {
+          if (job.id && updates.has(job.id)) {
+            const update = updates.get(job.id);
+            if (update) {
+                return { 
+                    ...job, 
+                    analysisStatus: update.status,
+                    activeOperation: update.operation 
+                };
+            }
+          }
+          return job;
+        })
+      );
+    }, { allowSignalWrites: true });
+
+    // React to Analysis Results from SignalR
+    effect(() => {
+      const results = this.signalRService.analysisResults();
+      if (results.size === 0) return;
+
+      this.jobsSignal.update(jobs => 
+        jobs.map(job => {
+          if (job.id && results.has(job.id)) {
+            const resultObj = results.get(job.id);
+            // We need to store it as string to match the model expectation for persistence (if we were saving purely frontend, but here we just update for display)
+            // The DB update happens in backend.
+            return { 
+              ...job, 
+              aiAnalysisResult: JSON.stringify(resultObj), 
+              analysisStatus: 'Done' 
+            };
+          }
+          return job;
+        })
+      );
+    }, { allowSignalWrites: true });
+    // React to Resume Generated
+    effect(() => {
+        const resumes = this.signalRService.resumeGenerated();
+        if (resumes.size === 0) return;
+
+        this.jobsSignal.update(jobs => 
+            jobs.map(job => {
+                if (job.id && resumes.has(job.id)) {
+                    return { ...job, generatedResume: resumes.get(job.id), analysisStatus: 'Done' };
+                }
+                return job;
+            })
+        );
+    }, { allowSignalWrites: true });
+
+    // React to Cover Letter Generated
+    effect(() => {
+        const letters = this.signalRService.coverLetterGenerated();
+        if (letters.size === 0) return;
+
+        this.jobsSignal.update(jobs => 
+            jobs.map(job => {
+                if (job.id && letters.has(job.id)) {
+                    return { ...job, generatedCoverLetter: letters.get(job.id), analysisStatus: 'Done' };
+                }
+                return job;
+            })
+        );
+    }, { allowSignalWrites: true });
+  }
+
+  // --- METHODS ---
+  
   getAllJobs() {
     this.http.get<JobApplication[]>(this.apiUrl).subscribe({
       next: (data) => {
         console.log('Jobs fetched successfully:', data);
-        // Update the signal with the new data.
         this.jobsSignal.set(data);
       },
       error: (err) => {
@@ -47,37 +108,22 @@ export class JobService {
     });
   }
 
-  /**
-   * Adds a new job and refreshes the list.
-   * HTTP POST: /api/JobApplications
-   */
   addJob(job: JobApplication) {
     return this.http.post<JobApplication>(this.apiUrl, job).pipe(
       tap(() => {
-        // After adding, refresh the list to see the new item
         this.getAllJobs();
       })
     );
   }
 
-  /**
-   * Updates the status of a job (e.g., drag and drop).
-   * HTTP PUT: /api/JobApplications/status/{id}
-   */
   updateJobStatus(jobId: number, newStatus: string) {
     const url = `${this.apiUrl}/status/${jobId}`;
-
-    // We send a simple object matching the DTO expected by the backend
     this.http.put(url, { status: newStatus }).subscribe({
       next: () => {
         console.log(`Status updated to ${newStatus} for Job ID ${jobId}`);
-
-        // Optimistic Update: Update the local signal immediately without re-fetching.
-        // This makes the UI feel faster.
         this.jobsSignal.update((currentJobs) =>
           currentJobs.map((job) => {
             if (job.id === jobId) {
-              // Return a new object with the updated status
               return { ...job, status: newStatus };
             }
             return job;
@@ -86,42 +132,31 @@ export class JobService {
       },
       error: (err) => {
         console.error('Error updating status:', err);
-        // In a real app, you might want to revert the drag-and-drop here
       },
     });
   }
 
-  /**
-   * Updates full job details.
-   * HTTP PUT: /api/JobApplications/{id}
-   */
   updateJob(job: JobApplication) {
     const url = `${this.apiUrl}/${job.id}`;
     return this.http.put(url, job).pipe(
       tap(() => {
-        // Update local signal to reflect changes immediately
         this.jobsSignal.update((jobs) => jobs.map((j) => (j.id === job.id ? job : j)));
       })
     );
   }
 
-  /**
-   * Deletes a job.
-   * HTTP DELETE: /api/JobApplications/{id}
-   */
   deleteJob(jobId: number) {
     const url = `${this.apiUrl}/${jobId}`;
     return this.http.delete(url).pipe(
       tap(() => {
-        // Remove from local signal
         this.jobsSignal.update((jobs) => jobs.filter((j) => j.id !== jobId));
       })
     );
   }
 
-  /**
+   /**
    * Calls the AI endpoint with a resume file.
-   * HTTP POST (Multipart): /api/Ai/analyze/{jobId}
+   * Now returns 202 Accepted immediately.
    */
   analyzeJob(jobId: number, resumeFile: File) {
     const url = `${environment.apiUrl}/Ai/analyze/${jobId}`;
@@ -129,7 +164,33 @@ export class JobService {
     const formData = new FormData();
     formData.append('resume', resumeFile);
 
-    // Angular HTTP client handles the Content-Type header for FormData automatically
-    return this.http.post<AiAnalysisResult>(url, formData);
+    // Optimistic Update
+    this.setAnalysisStatus(jobId, 'Queued');
+
+    return this.http.post(url, formData);
+  }
+
+  /**
+   * Triggers Resume Generation
+   */
+  generateResume(jobId: number) {
+      const url = `${environment.apiUrl}/Ai/generate-resume/${jobId}`;
+      this.setAnalysisStatus(jobId, 'Queued', 'Resume');
+      return this.http.post(url, {});
+  }
+
+  /**
+   * Triggers Cover Letter Generation
+   */
+  generateCoverLetter(jobId: number) {
+      const url = `${environment.apiUrl}/Ai/generate-cover-letter/${jobId}`;
+      this.setAnalysisStatus(jobId, 'Queued', 'CoverLetter');
+      return this.http.post(url, {});
+  }
+
+  private setAnalysisStatus(jobId: number, status: string, operation?: string) {
+    this.jobsSignal.update(jobs => 
+        jobs.map(j => j.id === jobId ? { ...j, analysisStatus: status, activeOperation: operation } : j)
+    );
   }
 }
