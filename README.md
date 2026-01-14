@@ -1,6 +1,6 @@
 # OfferMagnet 🧲
 
-**OfferMagnet** is a modern, AI-powered job application tracker designed to optimize the job hunting workflow. It combines a visual **Kanban** interface with **Generative AI** to analyze job descriptions against your resume, providing instant feedback and interview prep strategies.
+**OfferMagnet** is a modern, AI-powered job application tracker designed to optimize the job hunting workflow. It combines a visual **Kanban** interface with **Generative AI** to analyze job descriptions, **tailor resumes**, and **draft cover letters** in real-time.
 
 <div align="center">
   <img src="docs/dashboard-preview.png" alt="Dashboard Screenshot" width="70%" />
@@ -10,76 +10,58 @@
 ## 🚀 Features
 
 ### 1. Visual Kanban Board
+- **Drag-and-Drop Interface**: Built with Angular CDK for intuitive status management (Applied, Interviewing, Offer, Rejected).
+- **Interactive UI**: Custom Material Design cards with independent column scrolling.
+- **Job Validation**: Checks for missing descriptions or company names before analysis.
 
-- **Drag-and-Drop Interface**: Built with Angular CDK, allowing intuitive status management (Applied, Interviewing, Offer, Rejected).
-- **Interactive UI**: Custom Material Design cards with hover effects and quick actions.
-- **Scroll Optimization**: Independent column scrolling ensuring headers stay visible while lists remain navigable.
+### 2. AI-Powered Analysis & Documents
+- **Gemini Integration**: Uses Google's Gemini 1.5 Flash/2.5 for high-speed analysis.
+- **Smart Scoring**: Instantly scores your resume against the Job Description (JD) and highlights missing keywords.
+- **Tailored Resumes**: Automatically rewrites your resume content to match the specific JD using GenAI.
+- **Cover Letter Generator**: Drafts compelling, structured (Hook-Meat-Fit-CTA) cover letters in seconds.
+- **Iterative Workflow**: Upload a new resume version and re-analyze instantly to see your score improve.
+- **PdfPig Parsing**: robustly extracts text from PDF resumes.
 
-### 2. AI-Powered Analysis
+### 3. Real-Time Async Architecture
+- **Non-blocking UI**: Analysis requests are queued instantly (`202 Accepted`), keeping the UI responsive.
+- **SignalR**: Real-time WebSocket connection pushes progress updates ("Thinking...", "Writing Cover Letter...") and final results to the client.
+- **Background Processing**: Heavy AI tasks are handled by `.NET BackgroundService` workers using specialized Channels.
 
-- **Gemini Integration**: Leverages Google's Gemini 1.5/2.5 models to analyze Job Descriptions (JDs).
-- **Smart Insights**: Provides instant feedback on key requirements and skill gaps directly from the application card.
-- **Resume Parsing**: Utilizes **PdfPig** to extract text from PDF resumes for comparison against JDs.
-
-### 3. Modern Tech Stack
-
-- **Standalone Components**: Fully modular Angular architecture without `NgModule`.
-- **Signals**: Utilizes Angular Signals for fine-grained reactivity and state management.
-- **Lazy Loading**: Route-based lazy loading for optimal initial load performance.
-- **Robust Backend**: .NET 9 Web API using Entity Framework Core for data persistence.
-- **Rate Limiting**: Implements server-side rate limiting (Fixed Window: 5 requests/min) to manage AI API usage quotas.
-
-### 4. Cloud-Native Architecture
-
-- **Database**: Serverless PostgreSQL via **Neon**.
-- **Backend**: Hosted on **Render** with auto-scaling.
-- **Frontend**: Deployed on **Vercel**.
+### 4. Modern Tech Stack
+- **Frontend**: Angular 18+ (Standalone Components), Signals, Angular Material, RxJS.
+- **Backend**: .NET 9 Web API, Entity Framework Core, SignalR Hubs.
+- **Cloud-Native**: Serverless PostgreSQL (Neon), Rate Limiting, Docker-ready.
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-
 - **Framework**: Angular 18+ (Standalone Components)
 - **Language**: TypeScript
-- **UI Library**: Angular Material
-- **State Management**: Angular Signals
-- **Utilities**: Angular CDK (Drag & Drop), SCSS
+- **State Management**: Angular Signals & RxJS
+- **Real-time**: `@microsoft/signalr`
+- **UI Library**: Angular Material, CDK
+- **Styling**: SCSS (Global & Scoped)
 
 ### Backend
-
 - **Framework**: .NET 9 Web API
 - **Language**: C#
-- **ORM**: Entity Framework Core
-- **AI Integration**: Google Gemini API (`Mscc.GenerativeAI`)
-- **PDF Processing**: UglyToad.PdfPig
-
-### Database & DevOps
-
-- **Production DB**: Neon (Serverless PostgreSQL)
-- **Local DB**: Dockerized PostgreSQL
-- **Deployment**: Render (Web Service)
+- **Real-time**: ASP.NET Core SignalR
+- **AI Integration**: Google Gemini API
+- **Background Jobs**: `System.Threading.Channels`, `BackgroundService`
+- **ORM**: Entity Framework Core (SQLite/PostgreSQL)
 
 ---
 
 ## ⚙️ Getting Started
 
 ### Prerequisites
-
 - Node.js (v18+)
 - .NET 9 SDK
-- Docker Desktop (for PostgreSQL)
+- Docker Desktop (optional, for PostgreSQL)
 
-### 1. Database Setup
-
-Ensure your PostgreSQL container is running.
-
-```bash
-docker run --name jobtracker-db -e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypassword -p 5433:5432 -d postgres
-```
-
-### 2. Backend Setup (.NET API)
+### 1. Backend Setup (.NET API)
 
 Navigate to the API directory and configure your secrets.
 
@@ -96,15 +78,14 @@ dotnet ef database update
 # 3. Run the Server
 dotnet watch run
 ```
+_The API will start at `http://localhost:5023`._
 
-_The API will start at `http://localhost:5023` (or your configured port)._
+### 2. Frontend Setup (Angular)
 
-### 3. Frontend Setup (Angular)
-
-Navigate to the Client directory.
+Navigate to the Web directory.
 
 ```bash
-cd JobTracker.Client
+cd job-tracker-web
 
 # 1. Install Dependencies
 npm install
@@ -112,8 +93,44 @@ npm install
 # 2. Run the Application
 ng serve
 ```
-
 _Open your browser and navigate to `http://localhost:4200`._
+
+---
+
+## 📂 Project Structure
+
+```
+OfferMagnet/
+├── docs/                     # Documentation images
+│
+├── JobTracker.Api/           # .NET 9 Web API
+│   ├── Controllers/          # API Endpoints (AiController, JobAppsController)
+│   ├── Hubs/                 # SignalR Hubs (AnalysisHub)
+│   ├── Services/             # Business Logic (AiService, BackgroundAnalysisService)
+│   ├── Models/               # EF Core Entities
+│   └── Program.cs            # DI & App Configuration
+│
+└── job-tracker-web/          # Angular Frontend
+    └── src/app/
+        ├── components/       # Standalone Components (AnalysisDialog, Kanban)
+        ├── models/           # TypeScript Interfaces
+        ├── services/         # JobService (Signals), SignalRService
+        └── app.routes.ts     # Routes
+```
+
+## 🔐 Configuration
+
+**Rate Limiting**: The API uses a fixed window limiter (5 requests/minute) to prevent abusing the Gemini API. Exceeding this will return `429 Too Many Requests`.
+
+### AppSettings (Backend)
+
+The database connection string is located in `appsettings.json`. For the API Key, it is recommended to use **User Secrets** during development to avoid committing credentials to Git.
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Host=localhost;Port=5433;Database=jobtrackerdb;Username=myuser;Password=mypassword"
+}
+```
 
 ---
 
@@ -135,37 +152,3 @@ The database is hosted on **Neon**. We use a hybrid migration strategy:
 - **Environment Variables**:
   - `Gemini__ApiKey`: Set in Render Dashboard.
   - `ConnectionStrings__DefaultConnection`: The Neon Pooled connection string.
-
----
-
-## 📂 Project Structure
-
-```
-OfferMagnet/
-├── docs/                     # Documentation
-│
-├── JobTracker.Api/           # .NET 9 Web API
-│   ├── Controllers/          # API Endpoints
-│   ├── Models/               # EF Core Entities
-│   ├── Services/             # Business Logic (AiService.cs, JobService.cs)
-│   └── Program.cs            # DI & Configuration
-│
-└── JobTracker.Client/        # Angular Frontend
-    └── src/app/
-        ├── components/       # Standalone Components (Kanban, Dialogs)
-        ├── models/           # TypeScript Interfaces
-        ├── services/         # HTTP Services
-        └── app.routes.ts     # Lazy Loaded Routes
-```
-
-## 🔐 Configuration
-
-### AppSettings (Backend)
-
-The database connection string is located in `appsettings.json`. For the API Key, it is recommended to use **User Secrets** during development to avoid committing credentials to Git.
-
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Host=localhost;Port=5433;Database=jobtrackerdb;Username=myuser;Password=mypassword"
-}
-```
