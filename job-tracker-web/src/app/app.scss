@@ -1,3 +1,18 @@
+.demo-banner {
+  background-color: #fff3cd; // Warning yellow
+  color: #856404;
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #ffeeba;
+  position: relative;
+  z-index: 1001; // Above toolbar
+}
+
+.isHidden {
+  display: none !important;
+}
+
 .app-toolbar {
   position: sticky;
   top: 0;

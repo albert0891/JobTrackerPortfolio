@@ -30,6 +30,14 @@ builder.Services.AddSingleton(Channel.CreateUnbounded<AnalysisRequest>());
 // Register Background Service
 builder.Services.AddHostedService<BackgroundAnalysisService>();
 
+// Register Demo Cleanup Service (Only if enabled in config)
+// This is for the demo environment to auto-clean data.
+var demoMode = builder.Configuration.GetSection("DemoMode");
+if (demoMode.GetValue<bool>("Enabled"))
+{
+    builder.Services.AddHostedService<DemoCleanupService>();
+}
+
 // Register CORS Policy
 // SignalR requires AllowCredentials() and specific origins (cannot use AllowAnyOrigin with Credentials)
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();

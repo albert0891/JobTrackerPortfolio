@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { JobDialogComponent } from './components/job-dialog/job-dialog';
 import { JobService } from './services/job.service';
+import { DemoConfigService } from './services/demo-config.service';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,9 @@ export class App {
 
   private dialog = inject(MatDialog);
   public jobService = inject(JobService);
+  public demoConfigService = inject(DemoConfigService);
+  
+  demoConfig = this.demoConfigService.getDemoConfig();
 
   openAddJobDialog() {
     this.dialog.open(JobDialogComponent, {
