@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { map } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -33,8 +34,10 @@ export class App {
   private dialog = inject(MatDialog);
   public jobService = inject(JobService);
   public demoConfigService = inject(DemoConfigService);
-  
-  demoConfig = this.demoConfigService.getDemoConfig();
+
+  enabledDemoConfig$ = this.demoConfigService
+    .getDemoConfig()
+    .pipe(map((config) => (config.isEnabled ? config : null)));
 
   openAddJobDialog() {
     this.dialog.open(JobDialogComponent, {
