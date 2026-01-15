@@ -132,6 +132,20 @@ The database connection string is located in `appsettings.json`. For the API Key
 }
 ```
 
+### Demo Mode (Optional)
+
+This project supports a "self-cleaning" mode for public demos.
+
+```json
+"DemoMode": {
+  "Enabled": true,                 // CAUTION: Deletes data every X minutes
+  "CleanupIntervalMinutes": 60,    // Reset interval
+  "SeedData": true                 // Reseed with sample data
+}
+```
+
+> **Warning**: Never enable `DemoMode:Enabled` in a production environment with real user data.
+
 ---
 
 ## 📦 Deployment & CI/CD
