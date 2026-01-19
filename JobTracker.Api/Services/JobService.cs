@@ -15,7 +15,7 @@ namespace JobTracker.Api.Services
 
         public async Task<IEnumerable<JobApplication>> GetAllJobsAsync()
         {
-            return await _context.JobApplications.ToListAsync();
+            return await _context.JobApplications.OrderBy(j => j.Id).ToListAsync();
         }
 
         public async Task<JobApplication?> GetJobByIdAsync(int id)
